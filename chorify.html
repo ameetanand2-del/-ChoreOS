@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Chorify</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream:#F7F3EE; --cream-dark:#EEE8DF; --cream-border:#E0D8CC;
+  --slate:#2C2C2E; --slate-mid:#5A5A60; --slate-light:#9A9AA5;
+  --terra:#C1714F; --terra-light:#FAEAE3;
+  --sage:#5D8A6E; --sage-light:#E4F0E9;
+  --gold:#C9A84C; --gold-light:#FBF4E3;
+  --sky:#4A7FA5; --sky-light:#E3EFF8;
+  --lavender:#7A6FA0; --lavender-light:#EEECf8;
+  --danger:#D64E4E; --archive-color:#8A7A5D;
+  --font-display:'Lora',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+  --radius:16px; --radius-sm:10px;
+  --shadow:0 2px 12px rgba(44,44,46,0.08);
+  --shadow-md:0 4px 24px rgba(44,44,46,0.12);
+}
+html { height:100%; background:#1C1C1E; }
+body { height:100%; font-family:var(--font-body); -webkit-font-smoothing:antialiased; display:flex; align-items:center; justify-content:center; }
+
+/* ── PHONE SHELL ── */
+.phone-shell {
+  width:390px; height:844px; background:var(--cream); border-radius:48px; overflow:hidden;
+  position:relative; display:flex; flex-direction:column;
+  box-shadow:0 32px 80px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.08);
+  flex-shrink:0;
+}
+.dynamic-island {
+  position:absolute; top:12px; left:50%; transform:translateX(-50%);
+  width:120px; height:34px; background:var(--slate); border-radius:20px; z-index:30;
+}
+.status-bar {
+  flex-shrink:0; height:50px; display:flex; align-items:flex-end;
+  justify-content:space-between; padding:0 28px 8px;
+  background:var(--cream); z-index:10; position:relative;
+}
+.status-time { font-weight:600; font-size:15px; color:var(--slate); }
+.status-icons { display:flex; gap:6px; font-size:13px; }
+
+/* ── SCREENS ── */
+.screens { flex:1; overflow:hidden; position:relative; min-height:0; }
+.screen {
+  position:absolute; inset:0; overflow-y:scroll; overflow-x:hidden;
+  -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
+  background:var(--cream); display:none; flex-direction:column; scrollbar-width:none;
+}
+.screen::-webkit-scrollbar { display:none; }
+.screen.active { display:flex; animation:fadeIn 0.22s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  flex-shrink:0; height:80px; background:rgba(247,243,238,0.97);
+  backdrop-filter:blur(20px); border-top:1px solid var(--cream-border);
+  display:flex; align-items:center; justify-content:space-around;
+  padding:0 10px 16px; z-index:20; position:relative;
+}
+.nav-btn {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  cursor:pointer; padding:8px 12px; border-radius:12px;
+  transition:all 0.15s; border:none; background:none; -webkit-tap-highlight-color:transparent;
+}
+.nav-btn:active { transform:scale(0.92); }
+.nav-btn .nav-icon { font-size:22px; transition:transform 0.15s; }
+.nav-btn .nav-label { font-size:10px; font-weight:500; color:var(--slate-light); letter-spacing:0.02em; }
+.nav-btn.active .nav-label { color:var(--terra); }
+.nav-btn.active .nav-icon { transform:scale(1.1); }
+
+/* ── HEADERS ── */
+.screen-header { padding:20px 24px 16px; flex-shrink:0; }
+.screen-header .greeting { font-size:13px; color:var(--slate-light); margin-bottom:2px; }
+.screen-header h1 { font-family:var(--font-display); font-size:28px; color:var(--slate); font-weight:600; line-height:1.15; }
+.screen-header h1 em { font-style:italic; color:var(--terra); }
+.screen-header p { font-size:13px; color:var(--slate-mid); margin-top:4px; }
+.section-title {
+  font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--slate-light); padding:0 24px; margin:20px 0 10px; flex-shrink:0;
+}
+.card { margin:0 16px 12px; background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; flex-shrink:0; }
+
+/* ── SWIPE ROW ── */
+.swipe-row { position:relative; overflow:hidden; border-bottom:1px solid var(--cream-border); flex-shrink:0; }
+.swipe-row:last-child { border-bottom:none; }
+.swipe-actions { position:absolute; right:0; top:0; bottom:0; display:flex; align-items:stretch; z-index:1; }
+.action-btn {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; width:72px; border:none; cursor:pointer; font-family:var(--font-body);
+  transition:filter 0.1s; -webkit-tap-highlight-color:transparent;
+}
+.action-btn:active { filter:brightness(0.85); }
+.act-icon { font-size:17px; }
+.act-label { font-size:10px; font-weight:600; color:#fff; letter-spacing:0.03em; }
+.action-edit    { background:var(--sky); }
+.action-archive { background:var(--archive-color); }
+.action-delete  { background:var(--danger); }
+
+.chore-item {
+  position:relative; z-index:2; display:flex; align-items:center; gap:14px; padding:14px 18px;
+  background:#fff; cursor:pointer; user-select:none; touch-action:pan-y; will-change:transform;
+  -webkit-tap-highlight-color:transparent;
+}
+.chore-item.swiped { transition:transform 0.26s cubic-bezier(0.25,1,0.5,1); }
+.chore-item.no-transition { transition:none !important; }
+.chore-check {
+  width:24px; height:24px; border-radius:8px; border:2px solid var(--cream-border);
+  flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1); font-size:12px; background:#fff;
+}
+.chore-item.done .chore-check { background:var(--sage); border-color:var(--sage); color:#fff; transform:scale(1.1); }
+.chore-item.done .chore-check::after { content:'✓'; }
+.chore-item.done .chore-name { color:var(--slate-light); text-decoration:line-through; }
+.chore-item.archived-row { opacity:0.5; }
+.chore-info { flex:1; min-width:0; }
+.chore-name { font-size:15px; font-weight:500; color:var(--slate); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.chore-sub { font-size:12px; color:var(--slate-light); margin-top:1px; }
+.chore-badge { font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px; flex-shrink:0; }
+
+/* ── SWIPE HINT ── */
+.swipe-hint { font-size:11px; color:var(--slate-light); text-align:center; padding:4px 0; flex-shrink:0; display:flex; align-items:center; justify-content:center; gap:4px; }
+
+/* ── PROGRESS RING ── */
+.progress-card {
+  margin:0 16px 12px; background:var(--slate); border-radius:var(--radius);
+  padding:20px; display:flex; align-items:center; gap:20px; box-shadow:var(--shadow-md); flex-shrink:0;
+}
+.progress-ring-wrap { position:relative; width:72px; height:72px; flex-shrink:0; }
+.progress-ring-wrap svg { transform:rotate(-90deg); }
+.progress-ring-bg { fill:none; stroke:rgba(255,255,255,0.12); stroke-width:6; }
+.progress-ring-fill { fill:none; stroke:var(--terra); stroke-width:6; stroke-linecap:round; transition:stroke-dashoffset 0.6s ease; }
+.progress-ring-text { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.pct { font-size:18px; font-weight:600; color:#fff; line-height:1; }
+.pct-label { font-size:9px; color:rgba(255,255,255,0.5); margin-top:1px; }
+.progress-info h3 { font-family:var(--font-display); font-size:18px; color:#fff; font-weight:600; }
+.progress-info p { font-size:13px; color:rgba(255,255,255,0.55); margin-top:2px; }
+.progress-stats { display:flex; gap:16px; margin-top:10px; }
+.progress-stat .stat-val { font-size:20px; font-weight:600; color:#fff; }
+.progress-stat .stat-label { font-size:10px; color:rgba(255,255,255,0.45); }
+
+.day-summary {
+  margin:0 16px 8px; background:var(--terra-light); border-radius:var(--radius-sm);
+  padding:14px 18px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+.day-summary .summary-text { font-size:14px; color:var(--terra); font-weight:500; }
+.day-summary .summary-count { font-size:22px; font-weight:700; font-family:var(--font-display); color:var(--terra); }
+
+.upcoming-item { display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid var(--cream-border); }
+.upcoming-item:last-child { border-bottom:none; }
+.upcoming-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.upcoming-name { font-size:14px; color:var(--slate); font-weight:500; flex:1; }
+.upcoming-date { font-size:12px; color:var(--slate-light); }
+
+/* ── FREQ TABS ── */
+.freq-tabs { display:flex; gap:8px; padding:0 16px; overflow-x:auto; scrollbar-width:none; margin-bottom:4px; flex-shrink:0; }
+.freq-tabs::-webkit-scrollbar { display:none; }
+.freq-tab {
+  flex-shrink:0; padding:7px 16px; border-radius:20px; border:none;
+  font-family:var(--font-body); font-size:13px; font-weight:500; cursor:pointer;
+  background:#fff; color:var(--slate-mid); box-shadow:var(--shadow); transition:all 0.15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.freq-tab.active { background:var(--terra); color:#fff; box-shadow:0 2px 12px rgba(193,113,79,0.35); }
+
+/* ── CATEGORY GRID ── */
+.cat-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 16px; flex-shrink:0; }
+
+/* Regular category card */
+.cat-card { background:#fff; border-radius:var(--radius); padding:18px 16px; box-shadow:var(--shadow); }
+.cat-top { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.cat-top:active .cat-icon-wrap { transform:scale(0.96); }
+.cat-icon-wrap { transition:transform 0.15s; }
+.cat-icon { font-size:28px; margin-bottom:8px; }
+.cat-name { font-size:14px; font-weight:600; color:var(--slate); margin-bottom:2px; }
+.cat-count { font-size:12px; color:var(--slate-light); }
+.cat-bar { height:3px; border-radius:2px; margin-top:10px; }
+.cat-actions { display:flex; gap:6px; margin-top:12px; padding-top:10px; border-top:1px solid var(--cream-border); }
+.cat-action-btn {
+  flex:1; padding:6px 0; border-radius:8px; border:none;
+  font-family:var(--font-body); font-size:11px; font-weight:600;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; gap:3px;
+  transition:all 0.12s; -webkit-tap-highlight-color:transparent;
+}
+.cat-action-btn:active { transform:scale(0.94); }
+.cab-edit    { background:var(--sky-light); color:var(--sky); }
+.cab-archive { background:var(--cream-dark); color:var(--archive-color); }
+.cab-delete  { background:#FDEAEA; color:var(--danger); }
+
+/* ── ADD CATEGORY CARD ── */
+.add-cat-card {
+  background:#fff; border-radius:var(--radius); padding:18px 16px;
+  box-shadow:var(--shadow); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:8px; cursor:pointer;
+  border:2px dashed var(--cream-border); min-height:130px;
+  transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+.add-cat-card:active { transform:scale(0.97); border-color:var(--terra); }
+.add-cat-plus { font-size:32px; color:var(--terra); line-height:1; }
+.add-cat-label { font-size:13px; font-weight:600; color:var(--slate-mid); }
+
+/* ── SHOPPING ── */
+.shop-add { display:flex; gap:10px; margin:0 16px 16px; align-items:center; flex-shrink:0; }
+.shop-input {
+  flex:1; padding:12px 16px; border-radius:var(--radius-sm);
+  border:1px solid var(--cream-border); font-family:var(--font-body);
+  font-size:15px; color:var(--slate); background:#fff; outline:none; box-shadow:var(--shadow);
+}
+.shop-input:focus { border-color:var(--terra); }
+.shop-add-btn {
+  width:46px; height:46px; border-radius:var(--radius-sm); border:none;
+  background:var(--terra); color:#fff; font-size:22px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 12px rgba(193,113,79,0.35); flex-shrink:0; transition:transform 0.1s;
+}
+.shop-add-btn:active { transform:scale(0.94); }
+
+/* ── STATS ── */
+.stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:0 16px; margin-bottom:12px; flex-shrink:0; }
+.stat-box { background:#fff; border-radius:var(--radius-sm); padding:14px 10px; text-align:center; box-shadow:var(--shadow); }
+.stat-box .val { font-size:24px; font-weight:700; font-family:var(--font-display); color:var(--slate); }
+.stat-box .lbl { font-size:10px; color:var(--slate-light); margin-top:2px; text-transform:uppercase; letter-spacing:0.06em; }
+.bar-chart { padding:0 16px; display:flex; gap:8px; align-items:flex-end; height:100px; margin-bottom:8px; }
+.bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.bar { width:100%; border-radius:6px 6px 0 0; }
+.bar-day { font-size:10px; }
+.streak-card {
+  margin:0 16px 12px; border-radius:var(--radius); padding:20px;
+  background:linear-gradient(135deg,var(--sage) 0%,#4a7a5a 100%);
+  display:flex; align-items:center; gap:16px;
+  box-shadow:0 4px 20px rgba(93,138,110,0.4); flex-shrink:0;
+}
+.streak-flame { font-size:40px; }
+.streak-info h3 { font-family:var(--font-display); font-size:20px; color:#fff; font-weight:600; }
+.streak-info p { font-size:13px; color:rgba(255,255,255,0.7); margin-top:2px; }
+
+/* ── FAB ── */
+.fab {
+  position:absolute; bottom:96px; right:20px; width:54px; height:54px; border-radius:18px;
+  background:var(--terra); color:#fff; font-size:26px; display:flex; align-items:center;
+  justify-content:center; box-shadow:0 4px 20px rgba(193,113,79,0.5);
+  cursor:pointer; border:none; z-index:25; transition:transform 0.15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.fab:active { transform:scale(0.93) rotate(15deg); }
+
+/* ── MODALS ── */
+.modal-overlay {
+  position:absolute; inset:0; background:rgba(44,44,46,0.45); backdrop-filter:blur(6px);
+  z-index:100; display:none; align-items:flex-end;
+}
+.modal-overlay.open { display:flex; animation:fadeIn 0.18s ease; }
+.modal-sheet {
+  width:100%; background:var(--cream); border-radius:24px 24px 0 0; padding:0 0 44px;
+  animation:slideUp 0.28s cubic-bezier(0.34,1.56,0.64,1); max-height:92%; overflow-y:auto;
+}
+@keyframes slideUp { from{transform:translateY(100%);}to{transform:translateY(0);} }
+.modal-handle { width:40px; height:4px; background:var(--cream-border); border-radius:2px; margin:12px auto 20px; }
+.modal-header { padding:0 24px 16px; font-family:var(--font-display); font-size:22px; color:var(--slate); font-weight:600; }
+.modal-input-row { padding:0 24px; }
+.modal-input {
+  width:100%; padding:12px 16px; border-radius:var(--radius-sm);
+  border:1px solid var(--cream-border); font-family:var(--font-body);
+  font-size:15px; color:var(--slate); background:#fff; outline:none;
+}
+.modal-input:focus { border-color:var(--terra); }
+.modal-save {
+  display:block; width:calc(100% - 48px); margin:16px 24px 0;
+  padding:14px; background:var(--terra); color:#fff; border:none;
+  border-radius:var(--radius-sm); font-family:var(--font-body);
+  font-size:16px; font-weight:600; cursor:pointer; transition:transform 0.1s;
+}
+.modal-save:active { transform:scale(0.98); }
+.modal-label { font-size:12px; font-weight:600; color:var(--slate-light); text-transform:uppercase; letter-spacing:0.06em; padding:14px 24px 8px; }
+
+.freq-selector { display:flex; gap:8px; overflow-x:auto; padding:0 24px; scrollbar-width:none; }
+.freq-selector::-webkit-scrollbar { display:none; }
+.freq-opt {
+  flex-shrink:0; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:500;
+  border:1.5px solid var(--cream-border); cursor:pointer; color:var(--slate-mid);
+  background:#fff; transition:all 0.15s;
+}
+.freq-opt.sel { background:var(--terra); color:#fff; border-color:var(--terra); }
+
+/* Emoji picker grid */
+.emoji-grid {
+  display:grid; grid-template-columns:repeat(7,1fr); gap:4px; padding:0 24px;
+}
+.emoji-opt {
+  font-size:22px; text-align:center; padding:8px 4px; border-radius:10px;
+  cursor:pointer; transition:background 0.12s; border:2px solid transparent;
+  -webkit-tap-highlight-color:transparent;
+}
+.emoji-opt:active { transform:scale(0.9); }
+.emoji-opt.sel { background:var(--terra-light); border-color:var(--terra); }
+
+/* Color picker */
+.color-grid { display:flex; gap:8px; padding:0 24px; flex-wrap:wrap; }
+.color-opt {
+  width:32px; height:32px; border-radius:50%; cursor:pointer;
+  border:3px solid transparent; transition:all 0.12s;
+  -webkit-tap-highlight-color:transparent;
+}
+.color-opt:active { transform:scale(0.9); }
+.color-opt.sel { border-color:var(--slate); transform:scale(1.12); }
+
+/* confirm */
+.confirm-sheet { padding:24px; }
+.confirm-title { font-family:var(--font-display); font-size:20px; color:var(--slate); font-weight:600; margin-bottom:8px; }
+.confirm-msg { font-size:14px; color:var(--slate-mid); margin-bottom:24px; line-height:1.5; }
+.confirm-btns { display:flex; gap:10px; }
+.confirm-btn {
+  flex:1; padding:13px; border-radius:var(--radius-sm); border:none;
+  font-family:var(--font-body); font-size:15px; font-weight:600; cursor:pointer; transition:transform 0.1s;
+}
+.confirm-btn:active { transform:scale(0.97); }
+.confirm-cancel { background:var(--cream-dark); color:var(--slate-mid); }
+.confirm-ok { background:var(--danger); color:#fff; }
+.confirm-ok.is-archive { background:var(--archive-color); }
+
+/* back btn */
+.back-btn {
+  display:flex; align-items:center; gap:6px; padding:16px 24px 8px;
+  font-size:15px; color:var(--terra); cursor:pointer; border:none;
+  background:none; font-family:var(--font-body); font-weight:500;
+  -webkit-tap-highlight-color:transparent; flex-shrink:0;
+}
+
+.empty-state { text-align:center; padding:36px 24px; color:var(--slate-light); font-size:14px; flex-shrink:0; }
+.empty-state .empty-icon { font-size:38px; margin-bottom:10px; }
+
+/* custom category badge */
+.custom-badge {
+  font-size:9px; font-weight:700; padding:1px 6px; border-radius:10px;
+  background:var(--terra-light); color:var(--terra); margin-left:4px; vertical-align:middle;
+}
+
+@media (max-height:870px) {
+  .phone-shell { height:100vh; border-radius:0; width:100%; max-width:430px; }
+}
+</style>
+</head>
+<body>
+<div class="phone-shell">
+  <div class="dynamic-island"></div>
+  <div class="status-bar">
+    <span class="status-time" id="statusTime">9:41</span>
+    <div class="status-icons"><span>📶</span><span>🔋</span></div>
+  </div>
+
+  <div class="screens">
+
+    <!-- ══ HOME ══ -->
+    <div class="screen active" id="screen-home">
+      <div class="screen-header">
+        <div class="greeting" id="greeting">Good morning</div>
+        <h1>Your <em>home,</em><br>organized.</h1>
+      </div>
+      <div class="day-summary">
+        <div class="summary-text">Today's chores</div>
+        <div style="display:flex;align-items:baseline;gap:4px;">
+          <div class="summary-count" id="doneCount">0</div>
+          <div style="font-size:14px;color:var(--terra);">/ <span id="totalCount">0</span> done</div>
+        </div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-ring-wrap">
+          <svg width="72" height="72" viewBox="0 0 72 72">
+            <circle class="progress-ring-bg" cx="36" cy="36" r="30"/>
+            <circle class="progress-ring-fill" id="progressRing" cx="36" cy="36" r="30"
+              stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+          </svg>
+          <div class="progress-ring-text">
+            <div class="pct" id="weekPct">0%</div>
+            <div class="pct-label">today</div>
+          </div>
+        </div>
+        <div class="progress-info">
+          <h3>Today's Progress</h3>
+          <p id="progressMsg">Let's get started!</p>
+          <div class="progress-stats">
+            <div class="progress-stat"><div class="stat-val" id="weekDone">0</div><div class="stat-label">Done</div></div>
+            <div class="progress-stat"><div class="stat-val" id="weekTotal">0</div><div class="stat-label">Total</div></div>
+            <div class="progress-stat"><div class="stat-val">5</div><div class="stat-label">Streak</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="swipe-hint">← Swipe left on any task for actions</div>
+      <div class="section-title">Today's Chores</div>
+      <div class="card" id="todayChoresList"></div>
+      <div class="section-title">Upcoming</div>
+      <div class="card" id="upcomingList"></div>
+      <div style="height:24px;flex-shrink:0;"></div>
+    </div>
+
+    <!-- ══ SCHEDULE ══ -->
+    <div class="screen" id="screen-schedule">
+      <div class="screen-header">
+        <div class="greeting">Manage</div>
+        <h1>Your <em>schedule</em></h1>
+        <p>Organize chores by recurrence</p>
+      </div>
+      <div class="freq-tabs" id="freqTabs">
+        <button class="freq-tab active" onclick="filterSchedule('daily',this)">Daily</button>
+        <button class="freq-tab" onclick="filterSchedule('weekly',this)">Weekly</button>
+        <button class="freq-tab" onclick="filterSchedule('monthly',this)">Monthly</button>
+        <button class="freq-tab" onclick="filterSchedule('quarterly',this)">Quarterly</button>
+        <button class="freq-tab" onclick="filterSchedule('yearly',this)">Yearly</button>
+      </div>
+      <div style="height:10px;flex-shrink:0;"></div>
+      <div class="swipe-hint">← Swipe left for edit / archive / delete</div>
+      <div style="height:6px;flex-shrink:0;"></div>
+      <div class="card" id="scheduleList"></div>
+      <div style="height:100px;flex-shrink:0;"></div>
+    </div>
+
+    <!-- ══ CATEGORIES ══ -->
+    <div class="screen" id="screen-categories">
+      <div class="screen-header">
+        <div class="greeting">Browse by</div>
+        <h1><em>Categories</em></h1>
+        <p>Tap a category to view tasks</p>
+      </div>
+      <div class="cat-grid" id="catGrid"></div>
+      <div style="height:100px;flex-shrink:0;"></div>
+    </div>
+
+    <!-- ══ CATEGORY DETAIL ══ -->
+    <div class="screen" id="screen-catdetail">
+      <button class="back-btn" onclick="closeCategory()">← Categories</button>
+      <div class="screen-header" style="padding-top:4px;">
+        <div id="catDetailIcon" style="font-size:36px;margin-bottom:8px;"></div>
+        <h1 id="catDetailTitle"></h1>
+      </div>
+      <div class="swipe-hint">← Swipe left for actions</div>
+      <div style="height:8px;flex-shrink:0;"></div>
+      <div class="card" id="catDetailList"></div>
+      <div style="height:100px;flex-shrink:0;"></div>
+    </div>
+
+    <!-- ══ SHOPPING ══ -->
+    <div class="screen" id="screen-shopping">
+      <div class="screen-header">
+        <div class="greeting">Never forget</div>
+        <h1>Shopping <em>List</em></h1>
+        <p>Household essentials</p>
+      </div>
+      <div class="shop-add">
+        <input class="shop-input" id="shopInput" placeholder="Add item…" onkeydown="if(event.key==='Enter')addShopItem()">
+        <button class="shop-add-btn" onclick="addShopItem()">+</button>
+      </div>
+      <div class="section-title">To Buy</div>
+      <div class="card" id="shopListPending"></div>
+      <div class="section-title">Purchased</div>
+      <div class="card" id="shopListDone"></div>
+      <div style="height:100px;flex-shrink:0;"></div>
+    </div>
+
+    <!-- ══ STATS ══ -->
+    <div class="screen" id="screen-stats">
+      <div class="screen-header">
+        <div class="greeting">Your habits</div>
+        <h1><em>Progress</em> &amp; Stats</h1>
+        <p>Track your consistency</p>
+      </div>
+      <div class="streak-card">
+        <div class="streak-flame">🔥</div>
+        <div class="streak-info">
+          <h3>5-day streak!</h3>
+          <p>Keep it up — you're consistent</p>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="val" id="statDaily">0%</div><div class="lbl">Today</div></div>
+        <div class="stat-box"><div class="val" id="statWeekly">0%</div><div class="lbl">This Week</div></div>
+        <div class="stat-box"><div class="val" id="statMonthly">71%</div><div class="lbl">This Month</div></div>
+      </div>
+      <div class="section-title">This Week</div>
+      <div class="card" style="padding:16px 8px 12px;flex-shrink:0;">
+        <div class="bar-chart" id="barChart"></div>
+        <div style="display:flex;padding:0 16px 4px;justify-content:space-between;">
+          <span style="font-size:10px;color:var(--slate-light)">■ <span style="color:var(--terra)">Completed</span></span>
+          <span style="font-size:12px;color:var(--slate-light)">Past 7 days</span>
+        </div>
+      </div>
+      <div class="section-title">By Category</div>
+      <div class="card" id="statsCatBreakdown"></div>
+      <div style="height:100px;flex-shrink:0;"></div>
+    </div>
+
+  </div><!-- /screens -->
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="switchTab('home',this)"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn" onclick="switchTab('schedule',this)"><span class="nav-icon">🗓</span><span class="nav-label">Schedule</span></button>
+    <button class="nav-btn" onclick="switchTab('categories',this)"><span class="nav-icon">🗂</span><span class="nav-label">Categories</span></button>
+    <button class="nav-btn" onclick="switchTab('shopping',this)"><span class="nav-icon">🛒</span><span class="nav-label">Shopping</span></button>
+    <button class="nav-btn" onclick="switchTab('stats',this)"><span class="nav-icon">📊</span><span class="nav-label">Progress</span></button>
+  </nav>
+
+  <button class="fab" id="fabBtn" onclick="openAddModal()">+</button>
+
+  <!-- ══ ADD/EDIT CHORE MODAL ══ -->
+  <div class="modal-overlay" id="addModal" onclick="bgClose(event,'addModal')">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header" id="addModalTitle">Add New Chore</div>
+      <div class="modal-input-row">
+        <input class="modal-input" id="newChoreName" placeholder="Chore name…">
+      </div>
+      <div class="modal-label">Frequency</div>
+      <div class="freq-selector" id="freqSelector"></div>
+      <div class="modal-label">Category</div>
+      <div class="freq-selector" id="catSelector"></div>
+      <button class="modal-save" id="modalSaveBtn" onclick="saveChore()">Add Chore</button>
+    </div>
+  </div>
+
+  <!-- ══ ADD CATEGORY MODAL ══ -->
+  <div class="modal-overlay" id="addCatModal" onclick="bgClose(event,'addCatModal')">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header" id="addCatModalTitle">New Category</div>
+
+      <div class="modal-label">Category Name</div>
+      <div class="modal-input-row">
+        <input class="modal-input" id="newCatName" placeholder="e.g. Gym, Garden, Office…">
+      </div>
+
+      <div class="modal-label">Pick an Icon</div>
+      <div class="emoji-grid" id="emojiGrid"></div>
+
+      <div class="modal-label">Pick a Color</div>
+      <div class="color-grid" id="colorGrid"></div>
+
+      <button class="modal-save" id="catSaveBtn" onclick="saveCategory()">Create Category</button>
+    </div>
+  </div>
+
+  <!-- ══ CONFIRM MODAL ══ -->
+  <div class="modal-overlay" id="confirmModal" onclick="bgClose(event,'confirmModal')">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="confirm-sheet">
+        <div class="confirm-title" id="confirmTitle"></div>
+        <div class="confirm-msg"   id="confirmMsg"></div>
+        <div class="confirm-btns">
+          <button class="confirm-btn confirm-cancel" onclick="closeConfirm()">Cancel</button>
+          <button class="confirm-btn confirm-ok"     id="confirmOkBtn" onclick="doConfirm()">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /phone-shell -->
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════════════════════
+
+// Built-in category palette helpers
+const CAT_COLORS = [
+  { hex:'#C1714F', light:'rgba(193,113,79,0.12)' },  // terra
+  { hex:'#5D8A6E', light:'rgba(93,138,110,0.12)' },  // sage
+  { hex:'#4A7FA5', light:'rgba(74,127,165,0.12)' },  // sky
+  { hex:'#C9A84C', light:'rgba(201,168,76,0.12)'  },  // gold
+  { hex:'#7A6FA0', light:'rgba(122,111,160,0.12)' },  // lavender
+  { hex:'#D64E4E', light:'rgba(214,78,78,0.12)'   },  // danger
+  { hex:'#8A7A5D', light:'rgba(138,122,93,0.12)'  },  // archive
+  { hex:'#2C7873', light:'rgba(44,120,115,0.12)'  },  // teal
+  { hex:'#D4874A', light:'rgba(212,135,74,0.12)'  },  // orange
+  { hex:'#9E5A8A', light:'rgba(158,90,138,0.12)'  },  // plum
+];
+
+const EMOJI_OPTIONS = [
+  '🏠','🌿','🍳','💸','🔧','🧹','🛍','🌟','💪','🐾',
+  '📚','🎨','🎵','🏋️','🚗','🌺','🧘','🎮','🍀','🔑',
+  '💡','🌙','☀️','❄️','🎯','🏆','🛁','🪴','🧺','🗂',
+  '📦','🧰','🪣','🛒','🎁','🧲','🔑','🪞','🛏','🧴',
+];
+
+// CATEGORIES array — mutable so custom cats get pushed in
+let CATEGORIES = [
+  { id:'cleaning',    name:'Cleaning',    icon:'🧹', hex:'#C1714F', light:'rgba(193,113,79,0.12)',   custom:false },
+  { id:'kitchen',     name:'Kitchen',     icon:'🍳', hex:'#C9A84C', light:'rgba(201,168,76,0.12)',   custom:false },
+  { id:'bills',       name:'Bills',       icon:'💸', hex:'#4A7FA5', light:'rgba(74,127,165,0.12)',   custom:false },
+  { id:'maintenance', name:'Maintenance', icon:'🔧', hex:'#8A7A5D', light:'rgba(138,122,93,0.12)',   custom:false },
+  { id:'shopping',    name:'Shopping',    icon:'🛍', hex:'#5D8A6E', light:'rgba(93,138,110,0.12)',   custom:false },
+  { id:'personal',    name:'Personal',    icon:'🌿', hex:'#7A6FA0', light:'rgba(122,111,160,0.12)',  custom:false },
+];
+
+let chores = [
+  {id:1,  name:'Wash dishes',            freq:'daily',     cat:'kitchen',     done:false, today:true,  archived:false},
+  {id:2,  name:'Make the bed',           freq:'daily',     cat:'cleaning',    done:true,  today:true,  archived:false},
+  {id:3,  name:'Water plants',           freq:'daily',     cat:'personal',    done:false, today:true,  archived:false},
+  {id:4,  name:'Take out trash',         freq:'daily',     cat:'cleaning',    done:false, today:true,  archived:false},
+  {id:5,  name:'Tidy common areas',      freq:'daily',     cat:'cleaning',    done:true,  today:true,  archived:false},
+  {id:6,  name:'Do laundry',             freq:'weekly',    cat:'cleaning',    done:false, today:false, archived:false, dueIn:'Tue'},
+  {id:7,  name:'Vacuum floors',          freq:'weekly',    cat:'cleaning',    done:false, today:false, archived:false, dueIn:'Wed'},
+  {id:8,  name:'Mop floors',             freq:'weekly',    cat:'cleaning',    done:false, today:false, archived:false, dueIn:'Thu'},
+  {id:9,  name:'Clean bathroom',         freq:'weekly',    cat:'cleaning',    done:false, today:false, archived:false, dueIn:'Wed'},
+  {id:10, name:'Change bedsheets',       freq:'weekly',    cat:'personal',    done:false, today:false, archived:false, dueIn:'Sun'},
+  {id:11, name:'Pay rent',               freq:'monthly',   cat:'bills',       done:false, today:false, archived:false, dueIn:'Mar 1'},
+  {id:12, name:'Pay electricity',        freq:'monthly',   cat:'bills',       done:true,  today:false, archived:false, dueIn:'Mar 5'},
+  {id:13, name:'Clean refrigerator',     freq:'monthly',   cat:'kitchen',     done:false, today:false, archived:false, dueIn:'Mar 15'},
+  {id:14, name:'Check pantry',           freq:'monthly',   cat:'kitchen',     done:false, today:false, archived:false, dueIn:'Mar 20'},
+  {id:15, name:'Internet bill',          freq:'monthly',   cat:'bills',       done:false, today:false, archived:false, dueIn:'Mar 22'},
+  {id:16, name:'Deep clean home',        freq:'quarterly', cat:'cleaning',    done:false, today:false, archived:false, dueIn:'Apr 1'},
+  {id:17, name:'Clean windows',          freq:'quarterly', cat:'cleaning',    done:false, today:false, archived:false, dueIn:'Apr 1'},
+  {id:18, name:'Declutter storage',      freq:'quarterly', cat:'maintenance', done:false, today:false, archived:false, dueIn:'Apr 1'},
+  {id:19, name:'Rotate mattress',        freq:'quarterly', cat:'maintenance', done:false, today:false, archived:false, dueIn:'Apr 1'},
+  {id:20, name:'Home maintenance check', freq:'quarterly', cat:'maintenance', done:false, today:false, archived:false, dueIn:'Apr 1'},
+  {id:21, name:'HVAC filter change',     freq:'yearly',    cat:'maintenance', done:false, today:false, archived:false, dueIn:'Sep 1'},
+  {id:22, name:'Gutter cleaning',        freq:'yearly',    cat:'maintenance', done:false, today:false, archived:false, dueIn:'Oct 1'},
+  {id:23, name:'Smoke alarm test',       freq:'yearly',    cat:'maintenance', done:false, today:false, archived:false, dueIn:'Jan 1'},
+];
+
+let shopItems = [
+  {id:1, name:'Dish soap',           done:false},
+  {id:2, name:'Paper towels',        done:false},
+  {id:3, name:'Laundry detergent',   done:false},
+  {id:4, name:'All-purpose cleaner', done:false},
+  {id:5, name:'Milk',                done:true},
+  {id:6, name:'Eggs',                done:true},
+];
+
+let nextId       = 100;
+let currentFreq  = 'daily';
+let currentTab   = 'home';
+let currentCatId = null;
+
+// chore modal state
+let editingId    = null;
+let selectedFreq = 'daily';
+let selectedCat  = 'cleaning';
+
+// category modal state
+let editingCatId    = null;
+let selectedEmoji   = '🌟';
+let selectedColorHex= CAT_COLORS[0].hex;
+
+// confirm state
+let pendingAction = null;
+
+// ══════════════════════════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════════════════════════
+const getCat = id => CATEGORIES.find(c => c.id === id) || CATEGORIES[0];
+
+function updateClock() {
+  const now = new Date(); let h = now.getHours(), m = now.getMinutes();
+  h = h % 12 || 12;
+  document.getElementById('statusTime').textContent = `${h}:${String(m).padStart(2,'0')}`;
+}
+function updateGreeting() {
+  const h = new Date().getHours();
+  document.getElementById('greeting').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
+
+let openSwipeRow = null;
+function closeOpenSwipe() {
+  if (!openSwipeRow) return;
+  const item = openSwipeRow.querySelector('.chore-item');
+  if (item) { item.classList.add('swiped'); item.style.transform = 'translateX(0)'; }
+  openSwipeRow = null;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SWIPE ROW
+// ══════════════════════════════════════════════════════════════════════════════
+function makeSwipeRow(c, toggleFn, revealW) {
+  revealW = revealW || 216;
+  const cat = getCat(c.cat);
+
+  const row = document.createElement('div');
+  row.className = 'swipe-row';
+
+  const actions = document.createElement('div');
+  actions.className = 'swipe-actions';
+  actions.innerHTML = `
+    <button class="action-btn action-edit"    onclick="openEdit(${c.id})">
+      <span class="act-icon">✏️</span><span class="act-label">Edit</span>
+    </button>
+    <button class="action-btn action-archive" onclick="promptArchive(${c.id})">
+      <span class="act-icon">${c.archived?'♻️':'📦'}</span>
+      <span class="act-label">${c.archived?'Restore':'Archive'}</span>
+    </button>
+    <button class="action-btn action-delete"  onclick="promptDelete(${c.id})">
+      <span class="act-icon">🗑️</span><span class="act-label">Delete</span>
+    </button>`;
+
+  const item = document.createElement('div');
+  item.className = `chore-item${c.done?' done':''}${c.archived?' archived-row':''}`;
+  item.innerHTML = `
+    <div class="chore-check"></div>
+    <div class="chore-info">
+      <div class="chore-name">${c.name}</div>
+      <div class="chore-sub">${cat.icon} ${cat.name}${c.archived?' · Archived':''}${cat.custom?'<span class="custom-badge">custom</span>':''}</div>
+    </div>
+    <div class="chore-badge" style="background:${cat.light};color:${cat.hex};">${c.freq}</div>`;
+
+  item.addEventListener('click', () => {
+    if (row._justSwiped) { row._justSwiped = false; return; }
+    window[toggleFn](c.id);
+  });
+
+  row.appendChild(actions);
+  row.appendChild(item);
+
+  let startX=0, startY=0, curX=0, dragging=false, opened=false, axisLocked=false;
+
+  function onStart(x,y) {
+    startX=x; startY=y; curX=opened?-revealW:0;
+    dragging=true; axisLocked=false; item.classList.add('no-transition');
+  }
+  function onMove(x,y) {
+    if (!dragging) return;
+    const dx=x-startX, dy=y-startY;
+    if (!axisLocked) {
+      if (Math.abs(dy)>Math.abs(dx)+4) { dragging=false; return; }
+      axisLocked=true;
+    }
+    curX=Math.max(-revealW,Math.min(0,(opened?-revealW:0)+dx));
+    item.style.transform=`translateX(${curX}px)`;
+  }
+  function onEnd() {
+    if (!dragging) return; dragging=false;
+    item.classList.remove('no-transition'); item.classList.add('swiped');
+    if (curX<(opened?-revealW+50:-55)) {
+      item.style.transform=`translateX(-${revealW}px)`; opened=true; row._justSwiped=true;
+      if (openSwipeRow&&openSwipeRow!==row) {
+        const prev=openSwipeRow.querySelector('.chore-item');
+        if (prev){prev.classList.add('swiped');prev.style.transform='translateX(0)';}
+      }
+      openSwipeRow=row;
+    } else {
+      item.style.transform='translateX(0)'; opened=false;
+      if (openSwipeRow===row) openSwipeRow=null;
+    }
+    setTimeout(()=>item.classList.remove('swiped'),300);
+  }
+
+  item.addEventListener('touchstart', e=>onStart(e.touches[0].clientX,e.touches[0].clientY),{passive:true});
+  item.addEventListener('touchmove',  e=>onMove(e.touches[0].clientX,e.touches[0].clientY),{passive:true});
+  item.addEventListener('touchend',   ()=>onEnd());
+  item.addEventListener('mousedown',  e=>{onStart(e.clientX,e.clientY);e.preventDefault();});
+  window.addEventListener('mousemove',e=>{if(dragging)onMove(e.clientX,e.clientY);});
+  window.addEventListener('mouseup',  ()=>{if(dragging)onEnd();});
+
+  return row;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SHOP ROW
+// ══════════════════════════════════════════════════════════════════════════════
+function makeShopRow(item) {
+  const REVEAL=80;
+  const row=document.createElement('div'); row.className='swipe-row';
+  const actions=document.createElement('div'); actions.className='swipe-actions';
+  actions.innerHTML=`<button class="action-btn action-delete" style="width:${REVEAL}px" onclick="deleteShop(${item.id})"><span class="act-icon">🗑️</span><span class="act-label">Delete</span></button>`;
+  const el=document.createElement('div');
+  el.className=`chore-item${item.done?' done':''}`;
+  el.innerHTML=`<div class="chore-check"></div><div class="chore-info"><div class="chore-name">${item.name}</div></div>`;
+  el.addEventListener('click',()=>{if(row._justSwiped){row._justSwiped=false;return;}toggleShop(item.id);});
+  row.appendChild(actions); row.appendChild(el);
+  let startX=0,curX=0,dragging=false,opened=false;
+  function sd(x){startX=x;curX=opened?-REVEAL:0;dragging=true;el.classList.add('no-transition');}
+  function sm(x){if(!dragging)return;curX=Math.max(-REVEAL,Math.min(0,(opened?-REVEAL:0)+x-startX));el.style.transform=`translateX(${curX}px)`;}
+  function se(){if(!dragging)return;dragging=false;el.classList.remove('no-transition');el.classList.add('swiped');if(curX<-25){el.style.transform=`translateX(-${REVEAL}px)`;opened=true;row._justSwiped=true;}else{el.style.transform='translateX(0)';opened=false;}setTimeout(()=>el.classList.remove('swiped'),300);}
+  el.addEventListener('touchstart',e=>{sd(e.touches[0].clientX);},{passive:true});
+  el.addEventListener('touchmove',e=>{sm(e.touches[0].clientX);},{passive:true});
+  el.addEventListener('touchend',se);
+  el.addEventListener('mousedown',e=>{sd(e.clientX);e.preventDefault();});
+  window.addEventListener('mousemove',e=>{if(dragging)sm(e.clientX);});
+  window.addEventListener('mouseup',se);
+  return row;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FILL LIST HELPER
+// ══════════════════════════════════════════════════════════════════════════════
+function fillList(container, items, buildFn, emptyHTML) {
+  container.innerHTML='';
+  if (!items.length){container.innerHTML=emptyHTML;return;}
+  items.forEach(i=>container.appendChild(buildFn(i)));
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════════════════════════════════════
+function renderHome() {
+  const today=chores.filter(c=>c.today&&!c.archived);
+  const done=today.filter(c=>c.done).length;
+  document.getElementById('doneCount').textContent=done;
+  document.getElementById('totalCount').textContent=today.length;
+  const pct=today.length?Math.round(done/today.length*100):0;
+  document.getElementById('progressRing').style.strokeDashoffset=188.5-(pct/100)*188.5;
+  document.getElementById('weekPct').textContent=pct+'%';
+  document.getElementById('weekDone').textContent=done;
+  document.getElementById('weekTotal').textContent=today.length;
+  document.getElementById('progressMsg').textContent=pct===100?'🎉 All done today!':pct>=50?'More than halfway!':'Keep going!';
+
+  fillList(document.getElementById('todayChoresList'), today,
+    c=>makeSwipeRow(c,'toggleToday'),
+    '<div class="empty-state"><div class="empty-icon">✨</div>No chores for today!</div>');
+
+  const up=chores.filter(c=>!c.today&&!c.archived&&c.dueIn).slice(0,5);
+  document.getElementById('upcomingList').innerHTML=up.length
+    ?up.map(c=>{const cat=getCat(c.cat);return`<div class="upcoming-item"><div class="upcoming-dot" style="background:${cat.hex}"></div><div class="upcoming-name">${c.name}</div><div class="upcoming-date">${c.dueIn}</div></div>`;}).join('')
+    :'<div class="empty-state"><div class="empty-icon">🗓</div>Nothing upcoming</div>';
+}
+function toggleToday(id){const c=chores.find(x=>x.id===id);if(c&&!c.archived){c.done=!c.done;renderHome();renderStats();}}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SCHEDULE
+// ══════════════════════════════════════════════════════════════════════════════
+function filterSchedule(freq,btn){
+  currentFreq=freq;
+  document.querySelectorAll('#freqTabs .freq-tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderSchedule();
+}
+function renderSchedule(){
+  fillList(document.getElementById('scheduleList'),
+    chores.filter(c=>c.freq===currentFreq),
+    c=>makeSwipeRow(c,'toggleSchedule'),
+    '<div class="empty-state"><div class="empty-icon">📋</div>No tasks here yet</div>');
+}
+function toggleSchedule(id){const c=chores.find(x=>x.id===id);if(c&&!c.archived){c.done=!c.done;renderSchedule();renderHome();renderStats();}}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CATEGORIES
+// ══════════════════════════════════════════════════════════════════════════════
+function renderCategories(){
+  const grid=document.getElementById('catGrid');
+  // Build category cards + Add card at the end
+  let html=CATEGORIES.map(cat=>{
+    const cc=chores.filter(c=>c.cat===cat.id&&!c.archived);
+    const d=cc.filter(c=>c.done).length;
+    const p=cc.length?Math.round(d/cc.length*100):0;
+    return `<div class="cat-card">
+      <div class="cat-top" onclick="openCategory('${cat.id}')">
+        <div class="cat-icon-wrap">
+          <div class="cat-icon">${cat.icon}</div>
+          <div class="cat-name">${cat.name}${cat.custom?'<span class="custom-badge">custom</span>':''}</div>
+          <div class="cat-count">${cc.length} tasks · ${p}% done</div>
+          <div class="cat-bar" style="background:${cat.light};">
+            <div style="height:100%;width:${p}%;background:${cat.hex};border-radius:2px;transition:width 0.4s;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="cat-actions">
+        <button class="cat-action-btn cab-edit"    onclick="openAddForCat('${cat.id}')">✏️ Add</button>
+        ${cat.custom?`<button class="cat-action-btn cab-archive" onclick="openEditCat('${cat.id}')">✏️ Edit</button>`:''}
+        <button class="cat-action-btn cab-archive" onclick="promptArchiveCat('${cat.id}')">📦</button>
+        <button class="cat-action-btn cab-delete"  onclick="promptDeleteCat('${cat.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Add-new card
+  html+=`<div class="add-cat-card" onclick="openAddCatModal()">
+    <div class="add-cat-plus">+</div>
+    <div class="add-cat-label">New Category</div>
+  </div>`;
+
+  grid.innerHTML=html;
+}
+
+function openCategory(catId){
+  currentCatId=catId;
+  const cat=getCat(catId);
+  document.getElementById('catDetailIcon').textContent=cat.icon;
+  document.getElementById('catDetailTitle').textContent=cat.name;
+  const items=chores.filter(c=>c.cat===catId&&!c.archived);
+  fillList(document.getElementById('catDetailList'),items,
+    c=>makeSwipeRow(c,'toggleCat'),
+    '<div class="empty-state"><div class="empty-icon">✨</div>No active tasks</div>');
+  switchScreenRaw('catdetail');
+}
+function toggleCat(id){
+  const c=chores.find(x=>x.id===id);
+  if(c&&!c.archived){c.done=!c.done;if(currentCatId)openCategory(currentCatId);renderHome();renderStats();}
+}
+function closeCategory(){switchScreenRaw('categories');renderCategories();currentCatId=null;}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SHOPPING
+// ══════════════════════════════════════════════════════════════════════════════
+function renderShopping(){
+  fillList(document.getElementById('shopListPending'),shopItems.filter(i=>!i.done),makeShopRow,
+    '<div class="empty-state"><div class="empty-icon">🎉</div>All purchased!</div>');
+  fillList(document.getElementById('shopListDone'),shopItems.filter(i=>i.done),makeShopRow,
+    '<div class="empty-state" style="padding:14px 24px;font-size:13px;">Nothing yet</div>');
+}
+function toggleShop(id){const i=shopItems.find(x=>x.id===id);if(i){i.done=!i.done;renderShopping();}}
+function deleteShop(id){shopItems=shopItems.filter(x=>x.id!==id);renderShopping();}
+function addShopItem(){
+  const inp=document.getElementById('shopInput'),val=inp.value.trim();
+  if(!val)return;
+  shopItems.unshift({id:nextId++,name:val,done:false});
+  inp.value='';renderShopping();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// STATS — loops over ALL CATEGORIES (built-in + custom)
+// ══════════════════════════════════════════════════════════════════════════════
+function renderStats(){
+  const today=chores.filter(c=>c.today&&!c.archived);
+  const dpct=today.length?Math.round(today.filter(c=>c.done).length/today.length*100):0;
+  const live=chores.filter(c=>!c.archived);
+  const wpct=live.length?Math.round(live.filter(c=>c.done).length/live.length*100):0;
+  document.getElementById('statDaily').textContent=dpct+'%';
+  document.getElementById('statWeekly').textContent=wpct+'%';
+
+  // Bar chart
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const vals=[85,60,72,45,90,78,dpct];
+  document.getElementById('barChart').innerHTML=days.map((d,i)=>{
+    const isToday=i===6;
+    const h=Math.max(6,Math.round((vals[i]/100)*75));
+    return `<div class="bar-wrap">
+      <div class="bar" style="height:${h}px;background:${isToday?'var(--terra)':'var(--terra-light)'};opacity:${isToday?1:0.3+i*0.1};"></div>
+      <div class="bar-day" style="color:${isToday?'var(--terra)':'var(--slate-light)'};font-weight:${isToday?600:400}">${d}</div>
+    </div>`;
+  }).join('');
+
+  // Category breakdown — ALL categories including custom
+  const onlyCatsWithTasks = CATEGORIES.filter(cat => {
+    return chores.some(c => c.cat === cat.id); // include even if all archived, to show history
+  });
+
+  document.getElementById('statsCatBreakdown').innerHTML = onlyCatsWithTasks.map(cat=>{
+    const cc=chores.filter(c=>c.cat===cat.id&&!c.archived);
+    const allCc=chores.filter(c=>c.cat===cat.id); // total ever assigned
+    const d=cc.filter(c=>c.done).length;
+    const p=cc.length?Math.round(d/cc.length*100):0;
+    return `<div class="upcoming-item" style="gap:14px;">
+      <div style="font-size:20px;">${cat.icon}</div>
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;align-items:center;">
+          <span style="font-size:14px;font-weight:500;color:var(--slate);">
+            ${cat.name}${cat.custom?'<span class="custom-badge">custom</span>':''}
+          </span>
+          <span style="font-size:12px;color:var(--slate-light);">${d}/${cc.length} done</span>
+        </div>
+        <div style="height:6px;background:${cat.light};border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${p}%;background:${cat.hex};border-radius:3px;transition:width 0.5s;"></div>
+        </div>
+        <div style="font-size:10px;color:var(--slate-light);margin-top:3px;">${p}% complete</div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty-state" style="padding:20px;">No data yet</div>';
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ADD/EDIT CHORE MODAL
+// ══════════════════════════════════════════════════════════════════════════════
+function buildChoreModalSelectors(){
+  document.getElementById('freqSelector').innerHTML=
+    ['daily','weekly','monthly','quarterly','yearly'].map(f=>
+      `<div class="freq-opt ${f===selectedFreq?'sel':''}" data-v="${f}" onclick="selFreq(this)">${f[0].toUpperCase()+f.slice(1)}</div>`
+    ).join('');
+  // All categories (built-in + custom)
+  document.getElementById('catSelector').innerHTML=
+    CATEGORIES.map(c=>
+      `<div class="freq-opt ${c.id===selectedCat?'sel':''}" data-v="${c.id}" onclick="selCat(this)">${c.icon} ${c.name}</div>`
+    ).join('');
+}
+function selFreq(el){document.querySelectorAll('#freqSelector .freq-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');selectedFreq=el.dataset.v;}
+function selCat(el){document.querySelectorAll('#catSelector .freq-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');selectedCat=el.dataset.v;}
+
+function openAddModal(){
+  editingId=null;selectedFreq='daily';selectedCat=CATEGORIES[0].id;
+  document.getElementById('addModalTitle').textContent='Add New Chore';
+  document.getElementById('newChoreName').value='';
+  document.getElementById('modalSaveBtn').textContent='Add Chore';
+  buildChoreModalSelectors();
+  document.getElementById('addModal').classList.add('open');
+  setTimeout(()=>document.getElementById('newChoreName').focus(),120);
+}
+function openEdit(id){
+  closeOpenSwipe();
+  const c=chores.find(x=>x.id===id);if(!c)return;
+  editingId=id;selectedFreq=c.freq;selectedCat=c.cat;
+  document.getElementById('addModalTitle').textContent='Edit Chore';
+  document.getElementById('newChoreName').value=c.name;
+  document.getElementById('modalSaveBtn').textContent='Save Changes';
+  buildChoreModalSelectors();
+  document.getElementById('addModal').classList.add('open');
+  setTimeout(()=>document.getElementById('newChoreName').focus(),120);
+}
+function openAddForCat(catId){
+  selectedFreq='daily';selectedCat=catId;editingId=null;
+  document.getElementById('addModalTitle').textContent=`Add to ${getCat(catId).name}`;
+  document.getElementById('newChoreName').value='';
+  document.getElementById('modalSaveBtn').textContent='Add Chore';
+  buildChoreModalSelectors();
+  document.getElementById('addModal').classList.add('open');
+  setTimeout(()=>document.getElementById('newChoreName').focus(),120);
+}
+function saveChore(){
+  const name=document.getElementById('newChoreName').value.trim();
+  if(!name){document.getElementById('newChoreName').focus();return;}
+  if(editingId!==null){
+    const c=chores.find(x=>x.id===editingId);
+    if(c){c.name=name;c.freq=selectedFreq;c.cat=selectedCat;c.today=selectedFreq==='daily';}
+  } else {
+    chores.unshift({id:nextId++,name,freq:selectedFreq,cat:selectedCat,done:false,
+      today:selectedFreq==='daily',archived:false,dueIn:selectedFreq!=='daily'?'Soon':null});
+  }
+  closeModal('addModal');renderAll();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ADD/EDIT CATEGORY MODAL
+// ══════════════════════════════════════════════════════════════════════════════
+function buildCatModalPickers(){
+  // Emoji grid
+  document.getElementById('emojiGrid').innerHTML=EMOJI_OPTIONS.map(e=>
+    `<div class="emoji-opt ${e===selectedEmoji?'sel':''}" onclick="selEmoji(this)" data-e="${e}">${e}</div>`
+  ).join('');
+  // Color grid
+  document.getElementById('colorGrid').innerHTML=CAT_COLORS.map(c=>
+    `<div class="color-opt ${c.hex===selectedColorHex?'sel':''}" onclick="selColor(this)"
+      data-hex="${c.hex}" data-light="${c.light}"
+      style="background:${c.hex};"></div>`
+  ).join('');
+}
+function selEmoji(el){
+  document.querySelectorAll('.emoji-opt').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel'); selectedEmoji=el.dataset.e;
+}
+function selColor(el){
+  document.querySelectorAll('.color-opt').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel'); selectedColorHex=el.dataset.hex;
+}
+
+function openAddCatModal(){
+  editingCatId=null;
+  selectedEmoji='🌟'; selectedColorHex=CAT_COLORS[0].hex;
+  document.getElementById('addCatModalTitle').textContent='New Category';
+  document.getElementById('newCatName').value='';
+  document.getElementById('catSaveBtn').textContent='Create Category';
+  buildCatModalPickers();
+  document.getElementById('addCatModal').classList.add('open');
+  setTimeout(()=>document.getElementById('newCatName').focus(),120);
+}
+function openEditCat(catId){
+  const cat=getCat(catId); if(!cat||!cat.custom) return;
+  editingCatId=catId;
+  selectedEmoji=cat.icon; selectedColorHex=cat.hex;
+  document.getElementById('addCatModalTitle').textContent='Edit Category';
+  document.getElementById('newCatName').value=cat.name;
+  document.getElementById('catSaveBtn').textContent='Save Changes';
+  buildCatModalPickers();
+  document.getElementById('addCatModal').classList.add('open');
+  setTimeout(()=>document.getElementById('newCatName').focus(),120);
+}
+
+function saveCategory(){
+  const name=document.getElementById('newCatName').value.trim();
+  if(!name){document.getElementById('newCatName').focus();return;}
+
+  // Find the light colour for selected hex
+  const colorEntry=CAT_COLORS.find(c=>c.hex===selectedColorHex)||CAT_COLORS[0];
+
+  if(editingCatId){
+    // Edit existing custom category
+    const cat=CATEGORIES.find(c=>c.id===editingCatId);
+    if(cat){ cat.name=name; cat.icon=selectedEmoji; cat.hex=selectedColorHex; cat.light=colorEntry.light; }
+  } else {
+    // Create new category with unique id
+    const newId='custom_'+nextId++;
+    CATEGORIES.push({
+      id:newId, name, icon:selectedEmoji,
+      hex:selectedColorHex, light:colorEntry.light,
+      custom:true
+    });
+  }
+
+  closeModal('addCatModal');
+  renderAll(); // re-renders categories, stats breakdown, chore selectors everywhere
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ARCHIVE / DELETE
+// ══════════════════════════════════════════════════════════════════════════════
+function showConfirm(title,msg,okLabel,isArchive,action){
+  pendingAction=action;
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmMsg').textContent=msg;
+  const btn=document.getElementById('confirmOkBtn');
+  btn.textContent=okLabel;
+  btn.className=`confirm-btn confirm-ok${isArchive?' is-archive':''}`;
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+function promptDelete(id){
+  closeOpenSwipe();
+  const c=chores.find(x=>x.id===id);if(!c)return;
+  showConfirm('Delete Chore?',`"${c.name}" will be permanently removed.`,'Delete',false,{type:'delete',id});
+}
+function promptArchive(id){
+  closeOpenSwipe();
+  const c=chores.find(x=>x.id===id);if(!c)return;
+  const r=c.archived;
+  showConfirm(
+    r?'Restore Chore?':'Archive Chore?',
+    r?`"${c.name}" will be restored to active chores.`:`"${c.name}" will be hidden from active lists.`,
+    r?'Restore':'Archive',true,{type:r?'restore':'archive',id}
+  );
+}
+function promptArchiveCat(catId){
+  const cat=getCat(catId);
+  showConfirm(`Archive ${cat.name}?`,`All tasks in ${cat.name} will be archived.`,'Archive All',true,{type:'archiveCat',id:catId});
+}
+function promptDeleteCat(catId){
+  const cat=getCat(catId);
+  const isCustom=cat.custom;
+  showConfirm(
+    `Delete ${cat.name}?`,
+    isCustom
+      ?`The category "${cat.name}" and all its tasks will be permanently deleted.`
+      :`All tasks in "${cat.name}" will be permanently deleted. (The category itself will remain.)`,
+    'Delete All',false,{type:isCustom?'deleteCatAndTasks':'deleteTasks',id:catId}
+  );
+}
+
+function doConfirm(){
+  if(!pendingAction)return;
+  const{type,id}=pendingAction;
+  if      (type==='delete')            chores=chores.filter(c=>c.id!==id);
+  else if (type==='archive')           {const c=chores.find(x=>x.id===id);if(c)c.archived=true;}
+  else if (type==='restore')           {const c=chores.find(x=>x.id===id);if(c)c.archived=false;}
+  else if (type==='archiveCat')        chores.filter(c=>c.cat===id).forEach(c=>c.archived=true);
+  else if (type==='deleteTasks')       chores=chores.filter(c=>c.cat!==id);
+  else if (type==='deleteCatAndTasks') {
+    chores=chores.filter(c=>c.cat!==id);
+    CATEGORIES=CATEGORIES.filter(c=>c.id!==id);
+  }
+  pendingAction=null;
+  closeModal('confirmModal');
+  renderAll();
+}
+function closeConfirm(){pendingAction=null;closeModal('confirmModal');}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MODAL / NAV UTILS
+// ══════════════════════════════════════════════════════════════════════════════
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function bgClose(e,id){if(e.target===document.getElementById(id)){closeModal(id);closeOpenSwipe();}}
+
+function switchScreenRaw(tab){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+tab).classList.add('active');
+}
+function switchTab(tab,btn){
+  closeOpenSwipe(); currentTab=tab;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+tab).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('fabBtn').style.display=(tab==='shopping'||tab==='stats')?'none':'flex';
+  if(tab==='home')       renderHome();
+  if(tab==='schedule')   renderSchedule();
+  if(tab==='categories') renderCategories();
+  if(tab==='shopping')   renderShopping();
+  if(tab==='stats')      renderStats();
+}
+
+function renderAll(){
+  renderHome();renderSchedule();renderCategories();renderShopping();renderStats();
+  if(currentCatId)openCategory(currentCatId);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════════════
+updateClock();
+setInterval(updateClock,30000);
+updateGreeting();
+renderAll();
+</script>
+</body>
+</html>
