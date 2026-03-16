@@ -494,6 +494,11 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
       </div>
       <div class="modal-label" id="startDateLabel">Start / First Due Date</div>
       <div class="modal-input-row" id="startDateRow"><input class="modal-input" type="date" id="newChoreStart"></div>
+      <div class="modal-label">Reminder Time <span style="font-size:11px;color:var(--slate-light);text-transform:none;letter-spacing:0;font-weight:400;">(optional — defaults to 8:00 AM)</span></div>
+      <div class="modal-input-row" style="display:flex;gap:10px;align-items:center;">
+        <input class="modal-input" type="time" id="newChoreTime" style="flex:1;">
+        <button type="button" onclick="document.getElementById('newChoreTime').value=''" style="padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--cream-border);background:var(--cream-dark);color:var(--slate-mid);font-family:var(--font-body);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;">Clear</button>
+      </div>
       <button class="modal-save" id="modalSaveBtn" onclick="saveChore()">Add Chore</button>
     </div>
   </div>
@@ -789,6 +794,17 @@ function formatDueDate(isoDate){
 }
 
 // ═══════════════════════════════════════════════════
+// FORMAT TIME — "HH:MM" → "9:00 AM" / "2:30 PM"
+// ═══════════════════════════════════════════════════
+function formatTime12(t){
+  if(!t)return'';
+  const[h,m]=t.split(':').map(Number);
+  const ampm=h>=12?'PM':'AM';
+  const h12=h%12||12;
+  return`${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+// ═══════════════════════════════════════════════════
 // STREAK
 // ═══════════════════════════════════════════════════
 function calcStreak(){
@@ -839,11 +855,13 @@ function makeSwipeRow(c,toggleFn,revealW=216){
     <button class="action-btn action-delete"  onclick="promptDelete(${c.id})"><span class="act-icon">🗑️</span><span class="act-label">Delete</span></button>`;
   const item=document.createElement('div');
   item.className=`chore-item${c.done?' done':''}${c.archived?' archived-row':''}`;
+  // Format time for display e.g. "9:00 AM"
+  const timeDisplay=c.dueTime?formatTime12(c.dueTime):'';
   item.innerHTML=`
     <div class="chore-check"></div>
     <div class="chore-info">
       <div class="chore-name">${c.name}</div>
-      <div class="chore-sub">${cat.icon} ${cat.name}${c.archived?' · Archived':''}${cat.custom?'<span class="custom-badge">custom</span>':''}</div>
+      <div class="chore-sub">${cat.icon} ${cat.name}${c.archived?' · Archived':''}${cat.custom?'<span class="custom-badge">custom</span>':''}${timeDisplay?` · <span style="color:var(--terra);">⏰ ${timeDisplay}</span>`:''}</div>
     </div>
     <div class="chore-right">
       <div class="chore-badge" style="background:${cat.light};color:${cat.hex};">${ruleLabel(c.rule)}</div>
@@ -1140,8 +1158,9 @@ function buildChoreModal(title,saveBtnText){
   document.getElementById('rc-interval-n').value=recIntervalN;
   document.getElementById('rc-yearly-date').value=recYearDate;
   document.getElementById('rc-once-date').value=recOnceDate;
-  // FIX #4: always reset start date when building modal
+  // FIX #4: always reset start date and time when building modal
   document.getElementById('newChoreStart').value=todayISO();
+  document.getElementById('newChoreTime').value='';
   // Clear error states
   document.getElementById('choreNameError').classList.remove('show');
   document.getElementById('dowError').classList.remove('show');
@@ -1170,6 +1189,8 @@ function openEdit(id){
   buildChoreModal('Edit Chore','Save Changes');
   // FIX #4: set start date to actual current nextDue when editing
   document.getElementById('newChoreStart').value=c.nextDue||todayISO();
+  // Load saved time if present
+  document.getElementById('newChoreTime').value=c.dueTime||'';
   document.getElementById('addModal').classList.add('open');
   setTimeout(()=>document.getElementById('newChoreName').focus(),120);
 }
@@ -1205,12 +1226,14 @@ function saveChore(){
 
   const startVal=document.getElementById('newChoreStart').value;
   const nextDue=recType==='once'?(rule.onceDate||todayISO()):(startVal||todayISO());
+  // Read time — store as "HH:MM" string or null if blank
+  const timeVal=document.getElementById('newChoreTime').value.trim()||null;
 
   if(editingId!==null){
     const c=state.chores.find(x=>x.id===editingId);
-    if(c){c.name=name;c.rule=rule;c.cat=selectedCat;c.nextDue=nextDue;}
+    if(c){c.name=name;c.rule=rule;c.cat=selectedCat;c.nextDue=nextDue;c.dueTime=timeVal;}
   }else{
-    state.chores.unshift({id:state.nextId++,name,rule,cat:selectedCat,done:false,archived:false,nextDue});
+    state.chores.unshift({id:state.nextId++,name,rule,cat:selectedCat,done:false,archived:false,nextDue,dueTime:timeVal});
   }
   saveState();closeModal('addModal');renderAll();scheduleNotifications();
 }
@@ -1372,14 +1395,17 @@ function scheduleNotifications(){
     state.chores
       .filter(c=>!c.archived&&!c.done&&c.nextDue&&c.nextDue>=today&&c.nextDue<=in7ISO)
       .forEach(c=>{
-        const dueDate=new Date(c.nextDue+'T08:00:00');
+        // Use task's own dueTime if set, otherwise fall back to 08:00
+        const timeStr=c.dueTime||'08:00';
+        const dueDate=new Date(c.nextDue+'T'+timeStr+':00');
         if(dueDate<=now)return;
         const diff=Math.round((new Date(c.nextDue+'T00:00:00')-new Date(today+'T00:00:00'))/86400000);
+        const timeLabel=c.dueTime?` at ${formatTime12(c.dueTime)}`:'';
         notifications.push({
           tag:`chorify-task-${c.id}`,
           fireAt:dueDate.getTime(),
           title:diff===0?`📋 Due today: ${c.name}`:`📅 Coming up: ${c.name}`,
-          body:diff===0?`"${c.name}" is due today`:`"${c.name}" is due in ${diff} day${diff>1?'s':''}`,
+          body:diff===0?`"${c.name}" is due today${timeLabel}`:`"${c.name}" is due in ${diff} day${diff>1?'s':''}${timeLabel}`,
         });
       });
   }
