@@ -6,8 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Chorify">
-<meta name="theme-color" content="#C1714F">
-<link rel="manifest" href="./manifest.json">
 <title>Chorify</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -27,21 +25,20 @@
   --shadow:0 2px 12px rgba(44,44,46,0.08);
   --shadow-md:0 4px 24px rgba(44,44,46,0.12);
 }
-html{height:100%;background:#1C1C1E;}
-body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;}
+html{height:100%;background:var(--cream);}
+body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased;}
 
-.phone-shell{width:390px;height:844px;background:var(--cream);border-radius:48px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,0.6),inset 0 0 0 1px rgba(255,255,255,0.08);flex-shrink:0;}
-.dynamic-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:var(--slate);border-radius:20px;z-index:30;}
-.status-bar{flex-shrink:0;height:50px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;background:var(--cream);z-index:10;position:relative;}
-.status-time{font-weight:600;font-size:15px;color:var(--slate);}
-.status-icons{display:flex;gap:6px;font-size:13px;}
+/* SHELL */
+.phone-shell{width:100%;height:100vh;max-width:430px;margin:0 auto;background:var(--cream);position:relative;display:flex;flex-direction:column;overflow:hidden;}
 
+/* SCREENS */
 .screens{flex:1;overflow:hidden;position:relative;min-height:0;}
 .screen{position:absolute;inset:0;overflow-y:scroll;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--cream);display:none;flex-direction:column;scrollbar-width:none;}
 .screen::-webkit-scrollbar{display:none;}
 .screen.active{display:flex;animation:fadeIn 0.22s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
+/* NAV */
 .bottom-nav{flex-shrink:0;height:80px;background:rgba(247,243,238,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--cream-border);display:flex;align-items:center;justify-content:space-around;padding:0 10px 16px;z-index:20;position:relative;}
 .nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 12px;border-radius:12px;transition:all 0.15s;border:none;background:none;-webkit-tap-highlight-color:transparent;}
 .nav-btn:active{transform:scale(0.92);}
@@ -50,6 +47,7 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
 .nav-btn.active .nav-label{color:var(--terra);}
 .nav-btn.active .nav-icon{transform:scale(1.1);}
 
+/* HEADERS */
 .screen-header{padding:20px 24px 16px;flex-shrink:0;}
 .screen-header .greeting{font-size:13px;color:var(--slate-light);margin-bottom:2px;}
 .screen-header h1{font-family:var(--font-display);font-size:28px;color:var(--slate);font-weight:600;line-height:1.15;}
@@ -58,6 +56,7 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
 .section-title{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--slate-light);padding:0 24px;margin:20px 0 10px;flex-shrink:0;}
 .card{margin:0 16px 12px;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;flex-shrink:0;}
 
+/* SWIPE ROW */
 .swipe-row{position:relative;overflow:hidden;border-bottom:1px solid var(--cream-border);flex-shrink:0;}
 .swipe-row:last-child{border-bottom:none;}
 .swipe-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;z-index:1;}
@@ -88,6 +87,7 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
 .due-label{font-size:10px;}
 .swipe-hint{font-size:11px;color:var(--slate-light);text-align:center;padding:4px 0;flex-shrink:0;}
 
+/* PROGRESS */
 .progress-card{margin:0 16px 12px;background:var(--slate);border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:20px;box-shadow:var(--shadow-md);flex-shrink:0;}
 .progress-ring-wrap{position:relative;width:72px;height:72px;flex-shrink:0;}
 .progress-ring-wrap svg{transform:rotate(-90deg);}
@@ -110,13 +110,15 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
 .upcoming-item:last-child{border-bottom:none;}
 .upcoming-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 .upcoming-name{font-size:14px;color:var(--slate);font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.upcoming-date{font-size:12px;color:var(--slate-light);flex-shrink:0;}
+.upcoming-date{font-size:12px;flex-shrink:0;}
 
+/* FREQ TABS */
 .freq-tabs{display:flex;gap:8px;padding:0 16px;overflow-x:auto;scrollbar-width:none;margin-bottom:4px;flex-shrink:0;}
 .freq-tabs::-webkit-scrollbar{display:none;}
 .freq-tab{flex-shrink:0;padding:7px 16px;border-radius:20px;border:none;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;background:#fff;color:var(--slate-mid);box-shadow:var(--shadow);transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
 .freq-tab.active{background:var(--terra);color:#fff;box-shadow:0 2px 12px rgba(193,113,79,0.35);}
 
+/* CATEGORIES */
 .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px;flex-shrink:0;}
 .cat-card{background:#fff;border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow);}
 .cat-top{cursor:pointer;-webkit-tap-highlight-color:transparent;}
@@ -138,12 +140,14 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
 .add-cat-plus{font-size:32px;color:var(--terra);line-height:1;}
 .add-cat-label{font-size:13px;font-weight:600;color:var(--slate-mid);}
 
+/* SHOPPING */
 .shop-add{display:flex;gap:10px;margin:0 16px 16px;align-items:center;flex-shrink:0;}
 .shop-input{flex:1;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid var(--cream-border);font-family:var(--font-body);font-size:15px;color:var(--slate);background:#fff;outline:none;box-shadow:var(--shadow);}
 .shop-input:focus{border-color:var(--terra);}
 .shop-add-btn{width:46px;height:46px;border-radius:var(--radius-sm);border:none;background:var(--terra);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(193,113,79,0.35);flex-shrink:0;transition:transform 0.1s;}
 .shop-add-btn:active{transform:scale(0.94);}
 
+/* STATS */
 .stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 16px;margin-bottom:12px;flex-shrink:0;}
 .stat-box{background:#fff;border-radius:var(--radius-sm);padding:14px 10px;text-align:center;box-shadow:var(--shadow);}
 .stat-box .val{font-size:24px;font-weight:700;font-family:var(--font-display);color:var(--slate);}
@@ -157,35 +161,11 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
 .streak-info h3{font-family:var(--font-display);font-size:20px;color:#fff;font-weight:600;}
 .streak-info p{font-size:13px;color:rgba(255,255,255,0.7);margin-top:2px;}
 
-/* Notification banner */
-.notif-banner{margin:0 16px 12px;background:var(--sky-light);border:1px solid rgba(74,127,165,0.2);border-radius:var(--radius-sm);padding:14px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
-.notif-banner-icon{font-size:22px;flex-shrink:0;}
-.notif-banner-text{flex:1;}
-.notif-banner-text strong{font-size:13px;color:var(--sky);display:block;margin-bottom:2px;}
-.notif-banner-text span{font-size:12px;color:var(--slate-mid);}
-.notif-banner-btn{padding:7px 14px;background:var(--sky);color:#fff;border:none;border-radius:8px;font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;}
-.notif-banner-close{font-size:18px;color:var(--slate-light);cursor:pointer;flex-shrink:0;padding:4px;}
-
-/* Settings */
-.settings-card{margin:0 16px 12px;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);flex-shrink:0;}
-.settings-row{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--cream-border);}
-.settings-row:last-child{border-bottom:none;}
-.settings-icon{font-size:20px;flex-shrink:0;}
-.settings-label{flex:1;}
-.settings-label strong{font-size:14px;color:var(--slate);display:block;}
-.settings-label span{font-size:12px;color:var(--slate-light);}
-.settings-toggle{position:relative;width:44px;height:26px;flex-shrink:0;}
-.settings-toggle input{opacity:0;width:0;height:0;position:absolute;}
-.toggle-track{position:absolute;inset:0;background:var(--cream-border);border-radius:13px;cursor:pointer;transition:background 0.2s;}
-.settings-toggle input:checked + .toggle-track{background:var(--terra);}
-.toggle-track::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.15);}
-.settings-toggle input:checked + .toggle-track::after{transform:translateX(18px);}
-.time-input{padding:6px 10px;border-radius:8px;border:1px solid var(--cream-border);font-family:var(--font-body);font-size:13px;color:var(--slate);background:var(--cream);outline:none;width:90px;}
-.time-input:focus{border-color:var(--terra);}
-
+/* FAB */
 .fab{position:absolute;bottom:96px;right:20px;width:54px;height:54px;border-radius:18px;background:var(--terra);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(193,113,79,0.5);cursor:pointer;border:none;z-index:25;transition:transform 0.15s;-webkit-tap-highlight-color:transparent;}
 .fab:active{transform:scale(0.93) rotate(15deg);}
 
+/* MODALS */
 .modal-overlay{position:absolute;inset:0;background:rgba(44,44,46,0.45);backdrop-filter:blur(6px);z-index:100;display:none;align-items:flex-end;}
 .modal-overlay.open{display:flex;animation:fadeIn 0.18s ease;}
 .modal-sheet{width:100%;background:var(--cream);border-radius:24px 24px 0 0;padding:0 0 44px;animation:slideUp 0.28s cubic-bezier(0.34,1.56,0.64,1);max-height:92%;overflow-y:auto;}
@@ -201,6 +181,7 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
 .modal-error{font-size:12px;color:var(--danger);padding:4px 24px 0;display:none;}
 .modal-error.show{display:block;}
 
+/* RECURRENCE */
 .rec-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 24px;}
 .rec-type-btn{padding:10px 8px;border-radius:var(--radius-sm);border:1.5px solid var(--cream-border);background:#fff;font-family:var(--font-body);font-size:12px;font-weight:500;color:var(--slate-mid);cursor:pointer;text-align:center;transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
 .rec-type-btn:active{transform:scale(0.96);}
@@ -212,11 +193,9 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
 .rec-label{font-size:13px;color:var(--slate-mid);flex-shrink:0;}
 .rec-num{width:56px;padding:8px 10px;border-radius:8px;border:1px solid var(--cream-border);font-family:var(--font-body);font-size:15px;color:var(--slate);text-align:center;background:#fff;outline:none;}
 .rec-num:focus{border-color:var(--terra);}
-
 .dow-grid{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
 .dow-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--cream-border);background:#fff;font-family:var(--font-body);font-size:11px;font-weight:600;color:var(--slate-mid);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
 .dow-btn.sel{background:var(--terra);color:#fff;border-color:var(--terra);}
-
 .mday-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px;}
 .mday-btn{aspect-ratio:1;border-radius:8px;border:1.5px solid var(--cream-border);background:#fff;font-family:var(--font-body);font-size:11px;font-weight:500;color:var(--slate-mid);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;-webkit-tap-highlight-color:transparent;padding:0;}
 .mday-btn.sel{background:var(--terra);color:#fff;border-color:var(--terra);}
@@ -226,6 +205,7 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
 .freq-opt{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid var(--cream-border);cursor:pointer;color:var(--slate-mid);background:#fff;transition:all 0.15s;}
 .freq-opt.sel{background:var(--terra);color:#fff;border-color:var(--terra);}
 
+/* EMOJI / COLOR */
 .emoji-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:0 24px;}
 .emoji-opt{font-size:22px;text-align:center;padding:8px 4px;border-radius:10px;cursor:pointer;transition:background 0.12s;border:2px solid transparent;-webkit-tap-highlight-color:transparent;}
 .emoji-opt:active{transform:scale(0.9);}
@@ -234,6 +214,7 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
 .color-opt{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all 0.12s;-webkit-tap-highlight-color:transparent;}
 .color-opt.sel{border-color:var(--slate);transform:scale(1.12);}
 
+/* CONFIRM */
 .confirm-sheet{padding:24px;}
 .confirm-title{font-family:var(--font-display);font-size:20px;color:var(--slate);font-weight:600;margin-bottom:8px;}
 .confirm-msg{font-size:14px;color:var(--slate-mid);margin-bottom:24px;line-height:1.5;}
@@ -249,38 +230,24 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
 .empty-state .empty-icon{font-size:38px;margin-bottom:10px;}
 .custom-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:var(--terra-light);color:var(--terra);margin-left:4px;vertical-align:middle;}
 
+/* TOAST */
 .toast{position:absolute;top:60px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--slate);color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:500;z-index:200;opacity:0;pointer-events:none;transition:all 0.3s ease;white-space:nowrap;box-shadow:var(--shadow-md);max-width:320px;text-align:center;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-@media(max-height:870px){.phone-shell{height:100vh;border-radius:0;width:100%;max-width:430px;}}
+
 </style>
 </head>
 <body>
 <div class="phone-shell">
-  <div class="dynamic-island"></div>
-  <div class="status-bar">
-    <span class="status-time" id="statusTime">9:41</span>
-    <div class="status-icons"><span>📶</span><span>🔋</span></div>
-  </div>
   <div class="toast" id="toast"></div>
 
   <div class="screens">
+
     <!-- HOME -->
     <div class="screen active" id="screen-home">
       <div class="screen-header">
         <div class="greeting" id="greeting">Good morning</div>
         <h1>Your <em>home,</em><br>organized.</h1>
-      </div>
-      <div id="notifBanner" style="display:none;">
-        <div class="notif-banner">
-          <div class="notif-banner-icon">🔔</div>
-          <div class="notif-banner-text">
-            <strong>Enable Notifications</strong>
-            <span>Get reminders for tasks &amp; due dates</span>
-          </div>
-          <button class="notif-banner-btn" onclick="requestNotifPermission()">Enable</button>
-          <div class="notif-banner-close" onclick="dismissNotifBanner()">✕</div>
-        </div>
       </div>
       <div class="day-summary">
         <div class="summary-text">Today's chores</div>
@@ -382,7 +349,7 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
       <div style="height:100px;flex-shrink:0;"></div>
     </div>
 
-    <!-- STATS + SETTINGS -->
+    <!-- STATS -->
     <div class="screen" id="screen-stats">
       <div class="screen-header">
         <div class="greeting">Your habits</div>
@@ -411,32 +378,10 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
       </div>
       <div class="section-title">By Category</div>
       <div class="card" id="statsCatBreakdown"></div>
-      <div class="section-title">🔔 Notification Settings</div>
-      <div class="settings-card">
-        <div class="settings-row">
-          <div class="settings-icon">🌅</div>
-          <div class="settings-label"><strong>Daily Morning Digest</strong><span>Summary of today's tasks</span></div>
-          <label class="settings-toggle"><input type="checkbox" id="notifDailyToggle" onchange="saveNotifSettings()"><div class="toggle-track"></div></label>
-        </div>
-        <div class="settings-row">
-          <div class="settings-icon">🕗</div>
-          <div class="settings-label"><strong>Reminder Time</strong><span>When to send daily digest</span></div>
-          <input type="time" class="time-input" id="notifTime" value="08:00" onchange="saveNotifSettings()">
-        </div>
-        <div class="settings-row">
-          <div class="settings-icon">📅</div>
-          <div class="settings-label"><strong>Due Date Alerts</strong><span>Notify when tasks are due</span></div>
-          <label class="settings-toggle"><input type="checkbox" id="notifDueToggle" onchange="saveNotifSettings()"><div class="toggle-track"></div></label>
-        </div>
-        <div class="settings-row">
-          <div class="settings-icon">ℹ️</div>
-          <div class="settings-label"><strong>Status</strong><span id="notifStatusText">Loading…</span></div>
-          <button style="padding:6px 12px;border-radius:8px;border:none;background:var(--terra-light);color:var(--terra);font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;" onclick="requestNotifPermission()">Enable</button>
-        </div>
-      </div>
       <div style="height:100px;flex-shrink:0;"></div>
     </div>
-  </div>
+
+  </div><!-- /screens -->
 
   <nav class="bottom-nav">
     <button class="nav-btn active" onclick="switchTab('home',this)"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
@@ -467,7 +412,6 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
         <button class="rec-type-btn"     data-rt="yearly"   onclick="selRecType(this)"><span class="rec-icon">🌍</span>Yearly</button>
         <button class="rec-type-btn"     data-rt="once"     onclick="selRecType(this)"><span class="rec-icon">📌</span>One Time</button>
       </div>
-      <!-- Config panels -->
       <div class="rec-config" id="rc-interval">
         <div class="modal-label" style="padding-top:10px;">Every</div>
         <div class="rec-row" style="padding:0 24px;">
@@ -494,10 +438,10 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
       </div>
       <div class="modal-label" id="startDateLabel">Start / First Due Date</div>
       <div class="modal-input-row" id="startDateRow"><input class="modal-input" type="date" id="newChoreStart"></div>
-      <div class="modal-label">Reminder Time <span style="font-size:11px;color:var(--slate-light);text-transform:none;letter-spacing:0;font-weight:400;">(optional — defaults to 8:00 AM)</span></div>
+      <div class="modal-label">Reminder Time <span style="font-size:11px;color:var(--slate-light);text-transform:none;letter-spacing:0;font-weight:400;">(optional)</span></div>
       <div class="modal-input-row" style="display:flex;gap:10px;align-items:center;">
         <input class="modal-input" type="time" id="newChoreTime" style="flex:1;">
-        <button type="button" onclick="document.getElementById('newChoreTime').value=''" style="padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--cream-border);background:var(--cream-dark);color:var(--slate-mid);font-family:var(--font-body);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;">Clear</button>
+        <button type="button" onclick="document.getElementById('newChoreTime').value=''" style="padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--cream-border);background:var(--cream-dark);color:var(--slate-mid);font-family:var(--font-body);font-size:12px;cursor:pointer;flex-shrink:0;">Clear</button>
       </div>
       <button class="modal-save" id="modalSaveBtn" onclick="saveChore()">Add Chore</button>
     </div>
@@ -532,15 +476,15 @@ body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased
       </div>
     </div>
   </div>
-</div>
 
+</div><!-- /phone-shell -->
 <script>
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // CONSTANTS
-// ═══════════════════════════════════════════════════
-const LS_KEY = 'chorify_v5';
-const DOW_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const CAT_COLORS = [
+// ═══════════════════════════════════════════
+const LS_KEY='chorify_v5';
+const DOW_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const CAT_COLORS=[
   {hex:'#C1714F',light:'rgba(193,113,79,0.12)'},
   {hex:'#5D8A6E',light:'rgba(93,138,110,0.12)'},
   {hex:'#4A7FA5',light:'rgba(74,127,165,0.12)'},
@@ -559,9 +503,9 @@ const EMOJI_OPTIONS=[
   '📦','🧰','🪣','🛒','🎁','🧲','🪞','🛏','🧴','🌍',
 ];
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // RECURRENCE ENGINE
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function todayISO(){return new Date().toISOString().slice(0,10);}
 
 function calcNextDue(rule,fromISO){
@@ -600,15 +544,15 @@ function calcNextDue(rule,fromISO){
 }
 
 function ruleLabel(rule){
-  if(!rule)return 'daily';
+  if(!rule)return'daily';
   switch(rule.type){
-    case 'daily':     return 'Daily';
-    case 'weekly':    return 'Weekly';
-    case 'monthly':   return 'Monthly';
-    case 'quarterly': return 'Quarterly';
-    case 'yearly':    return 'Yearly';
-    case 'interval':  return `Every ${rule.intervalDays}d`;
-    case 'once':      return 'One-time';
+    case 'daily':     return'Daily';
+    case 'weekly':    return'Weekly';
+    case 'monthly':   return'Monthly';
+    case 'quarterly': return'Quarterly';
+    case 'yearly':    return'Yearly';
+    case 'interval':  return`Every ${rule.intervalDays}d`;
+    case 'once':      return'One-time';
     case 'weekdays':  return(rule.weekdays||[]).map(d=>DOW_NAMES[d]).join(', ')||'Set days';
     case 'monthday':  return`Monthly ${ordinal(rule.monthDay)}`;
     default:return rule.type;
@@ -616,9 +560,17 @@ function ruleLabel(rule){
 }
 function ordinal(n){const s=['th','st','nd','rd'];const v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
 
-// ═══════════════════════════════════════════════════
+function formatTime12(t){
+  if(!t)return'';
+  const[h,m]=t.split(':').map(Number);
+  const ampm=h>=12?'PM':'AM';
+  const h12=h%12||12;
+  return`${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+// ═══════════════════════════════════════════
 // DEFAULT DATA
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function defaultCategories(){
   return[
     {id:'cleaning',   name:'Cleaning',    icon:'🧹',hex:'#C1714F',light:'rgba(193,113,79,0.12)', custom:false},
@@ -633,35 +585,35 @@ function daysOut(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOSt
 function defaultChores(){
   const t=todayISO();
   return[
-    {id:1, name:'Wash dishes',            rule:{type:'daily'},                cat:'kitchen',    done:false,archived:false,nextDue:t},
-    {id:2, name:'Make the bed',           rule:{type:'daily'},                cat:'cleaning',   done:false,archived:false,nextDue:t},
-    {id:3, name:'Water plants',           rule:{type:'daily'},                cat:'personal',   done:false,archived:false,nextDue:t},
-    {id:4, name:'Take out trash',         rule:{type:'daily'},                cat:'cleaning',   done:false,archived:false,nextDue:t},
-    {id:5, name:'Tidy common areas',      rule:{type:'daily'},                cat:'cleaning',   done:false,archived:false,nextDue:t},
-    {id:6, name:'Do laundry',             rule:{type:'weekdays',weekdays:[1,4]},cat:'cleaning', done:false,archived:false,nextDue:daysOut(2)},
-    {id:7, name:'Vacuum floors',          rule:{type:'weekly'},               cat:'cleaning',   done:false,archived:false,nextDue:daysOut(3)},
-    {id:8, name:'Mop floors',             rule:{type:'weekly'},               cat:'cleaning',   done:false,archived:false,nextDue:daysOut(4)},
-    {id:9, name:'Clean bathroom',         rule:{type:'weekly'},               cat:'cleaning',   done:false,archived:false,nextDue:daysOut(3)},
-    {id:10,name:'Change bedsheets',       rule:{type:'weekly'},               cat:'personal',   done:false,archived:false,nextDue:daysOut(6)},
-    {id:11,name:'Pay rent',               rule:{type:'monthday',monthDay:1},  cat:'bills',      done:false,archived:false,nextDue:daysOut(14)},
-    {id:12,name:'Pay electricity',        rule:{type:'monthday',monthDay:5},  cat:'bills',      done:false,archived:false,nextDue:daysOut(5)},
-    {id:13,name:'Clean refrigerator',     rule:{type:'monthly'},              cat:'kitchen',    done:false,archived:false,nextDue:daysOut(15)},
-    {id:14,name:'Check pantry',           rule:{type:'monthly'},              cat:'kitchen',    done:false,archived:false,nextDue:daysOut(20)},
-    {id:15,name:'Internet bill',          rule:{type:'monthday',monthDay:22}, cat:'bills',      done:false,archived:false,nextDue:daysOut(22)},
-    {id:16,name:'Deep clean home',        rule:{type:'quarterly'},            cat:'cleaning',   done:false,archived:false,nextDue:daysOut(46)},
-    {id:17,name:'Clean windows',          rule:{type:'quarterly'},            cat:'cleaning',   done:false,archived:false,nextDue:daysOut(46)},
-    {id:18,name:'Declutter storage',      rule:{type:'quarterly'},            cat:'maintenance',done:false,archived:false,nextDue:daysOut(46)},
-    {id:19,name:'Rotate mattress',        rule:{type:'quarterly'},            cat:'maintenance',done:false,archived:false,nextDue:daysOut(46)},
-    {id:20,name:'Home maintenance check', rule:{type:'quarterly'},            cat:'maintenance',done:false,archived:false,nextDue:daysOut(46)},
-    {id:21,name:'HVAC filter change',     rule:{type:'yearly'},               cat:'maintenance',done:false,archived:false,nextDue:daysOut(180)},
-    {id:22,name:'Gutter cleaning',        rule:{type:'yearly'},               cat:'maintenance',done:false,archived:false,nextDue:daysOut(200)},
-    {id:23,name:'Smoke alarm test',       rule:{type:'yearly'},               cat:'maintenance',done:false,archived:false,nextDue:daysOut(300)},
+    {id:1, name:'Wash dishes',            rule:{type:'daily'},               cat:'kitchen',    done:false,archived:false,nextDue:t,dueTime:null},
+    {id:2, name:'Make the bed',           rule:{type:'daily'},               cat:'cleaning',   done:false,archived:false,nextDue:t,dueTime:null},
+    {id:3, name:'Water plants',           rule:{type:'daily'},               cat:'personal',   done:false,archived:false,nextDue:t,dueTime:null},
+    {id:4, name:'Take out trash',         rule:{type:'daily'},               cat:'cleaning',   done:false,archived:false,nextDue:t,dueTime:null},
+    {id:5, name:'Tidy common areas',      rule:{type:'daily'},               cat:'cleaning',   done:false,archived:false,nextDue:t,dueTime:null},
+    {id:6, name:'Do laundry',             rule:{type:'weekdays',weekdays:[1,4]},cat:'cleaning',done:false,archived:false,nextDue:daysOut(2),dueTime:null},
+    {id:7, name:'Vacuum floors',          rule:{type:'weekly'},              cat:'cleaning',   done:false,archived:false,nextDue:daysOut(3),dueTime:null},
+    {id:8, name:'Mop floors',             rule:{type:'weekly'},              cat:'cleaning',   done:false,archived:false,nextDue:daysOut(4),dueTime:null},
+    {id:9, name:'Clean bathroom',         rule:{type:'weekly'},              cat:'cleaning',   done:false,archived:false,nextDue:daysOut(3),dueTime:null},
+    {id:10,name:'Change bedsheets',       rule:{type:'weekly'},              cat:'personal',   done:false,archived:false,nextDue:daysOut(6),dueTime:null},
+    {id:11,name:'Pay rent',               rule:{type:'monthday',monthDay:1}, cat:'bills',      done:false,archived:false,nextDue:daysOut(14),dueTime:null},
+    {id:12,name:'Pay electricity',        rule:{type:'monthday',monthDay:5}, cat:'bills',      done:false,archived:false,nextDue:daysOut(5),dueTime:null},
+    {id:13,name:'Clean refrigerator',     rule:{type:'monthly'},             cat:'kitchen',    done:false,archived:false,nextDue:daysOut(15),dueTime:null},
+    {id:14,name:'Check pantry',           rule:{type:'monthly'},             cat:'kitchen',    done:false,archived:false,nextDue:daysOut(20),dueTime:null},
+    {id:15,name:'Internet bill',          rule:{type:'monthday',monthDay:22},cat:'bills',      done:false,archived:false,nextDue:daysOut(22),dueTime:null},
+    {id:16,name:'Deep clean home',        rule:{type:'quarterly'},           cat:'cleaning',   done:false,archived:false,nextDue:daysOut(46),dueTime:null},
+    {id:17,name:'Clean windows',          rule:{type:'quarterly'},           cat:'cleaning',   done:false,archived:false,nextDue:daysOut(46),dueTime:null},
+    {id:18,name:'Declutter storage',      rule:{type:'quarterly'},           cat:'maintenance',done:false,archived:false,nextDue:daysOut(46),dueTime:null},
+    {id:19,name:'Rotate mattress',        rule:{type:'quarterly'},           cat:'maintenance',done:false,archived:false,nextDue:daysOut(46),dueTime:null},
+    {id:20,name:'Home maintenance check', rule:{type:'quarterly'},           cat:'maintenance',done:false,archived:false,nextDue:daysOut(46),dueTime:null},
+    {id:21,name:'HVAC filter change',     rule:{type:'yearly'},              cat:'maintenance',done:false,archived:false,nextDue:daysOut(180),dueTime:null},
+    {id:22,name:'Gutter cleaning',        rule:{type:'yearly'},              cat:'maintenance',done:false,archived:false,nextDue:daysOut(200),dueTime:null},
+    {id:23,name:'Smoke alarm test',       rule:{type:'yearly'},              cat:'maintenance',done:false,archived:false,nextDue:daysOut(300),dueTime:null},
   ];
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 let state={
   categories:defaultCategories(),
   chores:defaultChores(),
@@ -676,12 +628,11 @@ let state={
   history:{},
   lastOpenDate:null,
   nextId:100,
-  notifSettings:{enabled:false,dailyDigest:false,dueAlerts:false,time:'08:00',dismissed:false},
 };
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // PERSISTENCE
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function saveState(){try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}}
 function loadState(){
   try{
@@ -689,24 +640,22 @@ function loadState(){
     if(!raw)return;
     const saved=JSON.parse(raw);
     state=Object.assign({},state,saved);
-    // Ensure default categories always exist
     const ids=new Set(state.categories.map(c=>c.id));
     defaultCategories().filter(c=>!ids.has(c.id)).forEach(c=>state.categories.unshift(c));
-    // Migrate any old chores that used freq string instead of rule
-    state.chores.forEach(c=>{if(!c.rule)c.rule={type:c.freq||'daily'};});
-    // Ensure notifSettings exists
-    if(!state.notifSettings)state.notifSettings={enabled:false,dailyDigest:false,dueAlerts:false,time:'08:00',dismissed:false};
+    state.chores.forEach(c=>{
+      if(!c.rule)c.rule={type:c.freq||'daily'};
+      if(c.dueTime===undefined)c.dueTime=null;
+    });
   }catch(e){console.warn('Chorify load error',e);}
 }
 
-// ═══════════════════════════════════════════════════
-// DAILY ENGINE — FIX: snapshot saved BEFORE reset, not after
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+// DAILY ENGINE
+// ═══════════════════════════════════════════
 function runDailyEngine(){
   const today=todayISO();
-  const isNewDay=state.lastOpenDate!==today;
-  if(isNewDay&&state.lastOpenDate){
-    // Fill history gaps for missed days
+  if(state.lastOpenDate!==today&&state.lastOpenDate){
+    // Fill history gaps
     const last=new Date(state.lastOpenDate+'T00:00:00');
     const now=new Date(today+'T00:00:00');
     while(last<now){
@@ -714,33 +663,26 @@ function runDailyEngine(){
       if(!state.history[k])state.history[k]={done:0,total:0};
       last.setDate(last.getDate()+1);
     }
-    // FIX #7: Save yesterday snapshot BEFORE resetting done flags
-    const yesterdayTasks=getToday(); // still has last night's done state
-    state.history[state.lastOpenDate]={
-      done:yesterdayTasks.filter(c=>c.done).length,
-      total:yesterdayTasks.length,
-    };
-    // NOW reset daily chores
+    // Save yesterday snapshot BEFORE reset
+    const yTasks=getToday();
+    state.history[state.lastOpenDate]={done:yTasks.filter(c=>c.done).length,total:yTasks.length};
+    // Reset daily chores
     state.chores.forEach(c=>{
-      if(!c.archived&&c.rule&&c.rule.type==='daily'){
-        c.done=false;
-        c.nextDue=today;
-      }
+      if(!c.archived&&c.rule&&c.rule.type==='daily'){c.done=false;c.nextDue=today;}
     });
-    showToast('☀️ New day! Daily tasks have been refreshed.');
+    showToast('☀️ New day! Daily tasks refreshed.');
   }
   state.lastOpenDate=today;
   saveState();
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // DATA ACCESSORS
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function getToday(){
   const today=todayISO();
   return state.chores.filter(c=>!c.archived&&(
-    (c.rule&&c.rule.type==='daily')||
-    (c.nextDue&&c.nextDue<=today)
+    (c.rule&&c.rule.type==='daily')||(c.nextDue&&c.nextDue<=today)
   ));
 }
 function getUpcoming(){
@@ -749,14 +691,13 @@ function getUpcoming(){
   const in21ISO=in21.toISOString().slice(0,10);
   return state.chores
     .filter(c=>!c.archived&&c.rule&&c.rule.type!=='daily'&&c.nextDue>today&&c.nextDue<=in21ISO)
-    .sort((a,b)=>a.nextDue.localeCompare(b.nextDue))
-    .slice(0,8);
+    .sort((a,b)=>a.nextDue.localeCompare(b.nextDue)).slice(0,8);
 }
 const getCat=id=>state.categories.find(c=>c.id===id)||state.categories[0];
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // TOAST
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 let toastTimer;
 function showToast(msg){
   const t=document.getElementById('toast');
@@ -765,22 +706,17 @@ function showToast(msg){
   toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // CLOCK & GREETING
-// ═══════════════════════════════════════════════════
-function updateClock(){
-  const now=new Date();let h=now.getHours(),m=now.getMinutes();
-  h=h%12||12;
-  document.getElementById('statusTime').textContent=`${h}:${String(m).padStart(2,'0')}`;
-}
+// ═══════════════════════════════════════════
 function updateGreeting(){
   const h=new Date().getHours();
   document.getElementById('greeting').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // FORMAT DUE DATE
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function formatDueDate(isoDate){
   if(!isoDate)return{label:'',cls:''};
   const today=todayISO();
@@ -793,20 +729,9 @@ function formatDueDate(isoDate){
   return{label:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}),cls:''};
 }
 
-// ═══════════════════════════════════════════════════
-// FORMAT TIME — "HH:MM" → "9:00 AM" / "2:30 PM"
-// ═══════════════════════════════════════════════════
-function formatTime12(t){
-  if(!t)return'';
-  const[h,m]=t.split(':').map(Number);
-  const ampm=h>=12?'PM':'AM';
-  const h12=h%12||12;
-  return`${h12}:${String(m).padStart(2,'0')} ${ampm}`;
-}
-
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // STREAK
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function calcStreak(){
   let streak=0;
   const d=new Date();
@@ -816,23 +741,14 @@ function calcStreak(){
     const k=d.toISOString().slice(0,10);
     const rec=state.history[k];
     const hasDone=(k===todayISO()&&todayDone>0)||(rec&&rec.done>0);
-    if(hasDone){streak++;d.setDate(d.getDate()-1);}
-    else break;
+    if(hasDone){streak++;d.setDate(d.getDate()-1);}else break;
   }
   return streak;
 }
 
-// ═══════════════════════════════════════════════════
-// NOTIFICATION PERMISSION HELPER — FIX #2 & #6: safe check
-// ═══════════════════════════════════════════════════
-function notifPermission(){
-  try{return(typeof window!=='undefined'&&'Notification'in window)?Notification.permission:'unsupported';}
-  catch(e){return'unsupported';}
-}
-
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // SWIPE ROW
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 let openSwipeRow=null,_activeDrag=null;
 document.addEventListener('mousemove',e=>{if(_activeDrag)_activeDrag.onMove(e.clientX,e.clientY);});
 document.addEventListener('mouseup',()=>{if(_activeDrag){_activeDrag.onEnd();_activeDrag=null;}});
@@ -847,6 +763,7 @@ function closeOpenSwipe(){
 function makeSwipeRow(c,toggleFn,revealW=216){
   const cat=getCat(c.cat);
   const due=c.rule&&c.rule.type!=='daily'?formatDueDate(c.nextDue):{label:'',cls:''};
+  const timeDisplay=c.dueTime?formatTime12(c.dueTime):'';
   const row=document.createElement('div');row.className='swipe-row';
   const actions=document.createElement('div');actions.className='swipe-actions';
   actions.innerHTML=`
@@ -855,8 +772,6 @@ function makeSwipeRow(c,toggleFn,revealW=216){
     <button class="action-btn action-delete"  onclick="promptDelete(${c.id})"><span class="act-icon">🗑️</span><span class="act-label">Delete</span></button>`;
   const item=document.createElement('div');
   item.className=`chore-item${c.done?' done':''}${c.archived?' archived-row':''}`;
-  // Format time for display e.g. "9:00 AM"
-  const timeDisplay=c.dueTime?formatTime12(c.dueTime):'';
   item.innerHTML=`
     <div class="chore-check"></div>
     <div class="chore-info">
@@ -922,9 +837,9 @@ function fillList(container,items,buildFn,emptyHTML){
   items.forEach(i=>container.appendChild(buildFn(i)));
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // HOME
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function renderHome(){
   const today=getToday();
   const done=today.filter(c=>c.done).length;
@@ -943,27 +858,21 @@ function renderHome(){
   document.getElementById('upcomingList').innerHTML=up.length
     ?up.map(c=>{const cat=getCat(c.cat);const due=formatDueDate(c.nextDue);return`<div class="upcoming-item"><div class="upcoming-dot" style="background:${cat.hex}"></div><div class="upcoming-name">${c.name}</div><div class="upcoming-date ${due.cls}">${due.label}</div></div>`;}).join('')
     :'<div class="empty-state"><div class="empty-icon">🗓</div>Nothing due in the next 3 weeks</div>';
-  // FIX #2 & #6: use safe notifPermission() helper
-  const banner=document.getElementById('notifBanner');
-  banner.style.display=(notifPermission()==='default'&&!state.notifSettings.dismissed)?'block':'none';
 }
-
 function toggleToday(id){
-  const c=state.chores.find(x=>x.id===id);
-  if(!c||c.archived)return;
+  const c=state.chores.find(x=>x.id===id);if(!c||c.archived)return;
   c.done=!c.done;
-  // FIX #1: advance nextDue when non-daily task is completed
   if(c.done&&c.rule&&c.rule.type!=='daily'&&c.rule.type!=='once'){
     const next=calcNextDue(c.rule,todayISO());
-    if(next){c.nextDue=next;showToast(`✅ Scheduled next: ${formatDueDate(next).label}`);}
+    if(next){c.nextDue=next;showToast(`✅ Next due: ${formatDueDate(next).label}`);}
   }
   state.history[todayISO()]={done:getToday().filter(x=>x.done).length,total:getToday().length};
-  saveState();renderHome();renderStats();scheduleNotifications();
+  saveState();renderHome();renderStats();
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // SCHEDULE
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 let currentFreq='daily';
 function filterSchedule(freq,btn){
   currentFreq=freq;
@@ -982,10 +891,8 @@ function renderSchedule(){
     '<div class="empty-state"><div class="empty-icon">📋</div>No tasks here yet</div>');
 }
 function toggleSchedule(id){
-  const c=state.chores.find(x=>x.id===id);
-  if(!c||c.archived)return;
+  const c=state.chores.find(x=>x.id===id);if(!c||c.archived)return;
   c.done=!c.done;
-  // FIX #1: advance nextDue after completion
   if(c.done&&c.rule&&c.rule.type!=='daily'&&c.rule.type!=='once'){
     const next=calcNextDue(c.rule,todayISO());
     if(next){c.nextDue=next;showToast(`✅ Next due: ${formatDueDate(next).label}`);}
@@ -994,9 +901,9 @@ function toggleSchedule(id){
   saveState();renderSchedule();renderHome();renderStats();
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // CATEGORIES
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 let currentCatId=null;
 function renderCategories(){
   const grid=document.getElementById('catGrid');
@@ -1037,17 +944,16 @@ function toggleCat(id){
   if(c&&!c.archived){
     c.done=!c.done;
     if(c.done&&c.rule&&c.rule.type!=='daily'&&c.rule.type!=='once'){
-      const next=calcNextDue(c.rule,todayISO());
-      if(next)c.nextDue=next;
+      const next=calcNextDue(c.rule,todayISO());if(next)c.nextDue=next;
     }
     saveState();if(currentCatId)openCategory(currentCatId);renderHome();renderStats();
   }
 }
 function closeCategory(){switchScreenRaw('categories');renderCategories();currentCatId=null;}
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // SHOPPING
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function renderShopping(){
   fillList(document.getElementById('shopListPending'),state.shopItems.filter(i=>!i.done),makeShopRow,
     '<div class="empty-state"><div class="empty-icon">🎉</div>All purchased!</div>');
@@ -1063,9 +969,9 @@ function addShopItem(){
   inp.value='';saveState();renderShopping();
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // STATS
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function renderStats(){
   const today=getToday();
   const dpct=today.length?Math.round(today.filter(c=>c.done).length/today.length*100):0;
@@ -1099,20 +1005,11 @@ function renderStats(){
     const p=cc.length?Math.round(d/cc.length*100):0;
     return`<div class="upcoming-item" style="gap:14px;"><div style="font-size:20px;">${cat.icon}</div><div style="flex:1;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;align-items:center;"><span style="font-size:14px;font-weight:500;color:var(--slate);">${cat.name}${cat.custom?'<span class="custom-badge">custom</span>':''}</span><span style="font-size:12px;color:var(--slate-light);">${d}/${cc.length}</span></div><div style="height:6px;background:${cat.light};border-radius:3px;overflow:hidden;"><div style="height:100%;width:${p}%;background:${cat.hex};border-radius:3px;transition:width 0.5s;"></div></div><div style="font-size:10px;color:var(--slate-light);margin-top:3px;">${p}% complete · ${cc.length} active tasks</div></div></div>`;
   }).join(''):'<div class="empty-state" style="padding:20px;">No task data yet</div>';
-  // Notification settings
-  const ns=state.notifSettings;
-  document.getElementById('notifDailyToggle').checked=ns.dailyDigest;
-  document.getElementById('notifDueToggle').checked=ns.dueAlerts;
-  document.getElementById('notifTime').value=ns.time||'08:00';
-  // FIX #2 & #6: use safe helper
-  const perm=notifPermission();
-  const statusMap={granted:'✅ Notifications enabled',denied:'❌ Blocked — enable in Safari Settings → Chorify',default:'⏳ Not yet enabled — tap Enable',unsupported:'⚠️ Not supported in this browser'};
-  document.getElementById('notifStatusText').textContent=statusMap[perm]||perm;
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // RECURRENCE MODAL
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 let editingId=null,selectedCat='cleaning';
 let recType='daily',recIntervalN=2,recWeekdays=[],recMonthDay=1,recYearDate='',recOnceDate='';
 
@@ -1122,12 +1019,10 @@ function selRecType(btn){
   ['interval','weekdays','monthday','once','yearly'].forEach(t=>{
     const el=document.getElementById('rc-'+t);if(el)el.classList.toggle('show',t===recType);
   });
-  // Show/hide start date row — hidden for one-time tasks
   const showStart=recType!=='once';
   document.getElementById('startDateLabel').style.display=showStart?'':'none';
   document.getElementById('startDateRow').style.display=showStart?'':'none';
 }
-
 function buildDowGrid(){
   document.getElementById('dowGrid').innerHTML=DOW_NAMES.map((n,i)=>
     `<button class="dow-btn ${recWeekdays.includes(i)?'sel':''}" onclick="toggleDow(${i})">${n}</button>`).join('');
@@ -1158,15 +1053,12 @@ function buildChoreModal(title,saveBtnText){
   document.getElementById('rc-interval-n').value=recIntervalN;
   document.getElementById('rc-yearly-date').value=recYearDate;
   document.getElementById('rc-once-date').value=recOnceDate;
-  // FIX #4: always reset start date and time when building modal
   document.getElementById('newChoreStart').value=todayISO();
   document.getElementById('newChoreTime').value='';
-  // Clear error states
   document.getElementById('choreNameError').classList.remove('show');
   document.getElementById('dowError').classList.remove('show');
   buildDowGrid();buildMdayGrid();
 }
-
 function selCat(el){document.querySelectorAll('#catSelector .freq-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');selectedCat=el.dataset.v;}
 
 function openAddModal(){
@@ -1187,9 +1079,7 @@ function openEdit(id){
   recYearDate=rule.yearDate||'';recOnceDate=rule.onceDate||c.nextDue||'';
   document.getElementById('newChoreName').value=c.name;
   buildChoreModal('Edit Chore','Save Changes');
-  // FIX #4: set start date to actual current nextDue when editing
   document.getElementById('newChoreStart').value=c.nextDue||todayISO();
-  // Load saved time if present
   document.getElementById('newChoreTime').value=c.dueTime||'';
   document.getElementById('addModal').classList.add('open');
   setTimeout(()=>document.getElementById('newChoreName').focus(),120);
@@ -1205,42 +1095,31 @@ function openAddForCat(catId){
 
 function saveChore(){
   const name=document.getElementById('newChoreName').value.trim();
-  // Validate name
-  if(!name){
-    document.getElementById('choreNameError').classList.add('show');
-    document.getElementById('newChoreName').focus();return;
-  }
+  if(!name){document.getElementById('choreNameError').classList.add('show');document.getElementById('newChoreName').focus();return;}
   document.getElementById('choreNameError').classList.remove('show');
-  // FIX #5: validate weekdays selection
-  if(recType==='weekdays'&&recWeekdays.length===0){
-    document.getElementById('dowError').classList.add('show');return;
-  }
+  if(recType==='weekdays'&&recWeekdays.length===0){document.getElementById('dowError').classList.add('show');return;}
   document.getElementById('dowError').classList.remove('show');
-
   const rule={type:recType};
   if(recType==='interval')  rule.intervalDays=parseInt(document.getElementById('rc-interval-n').value)||2;
   if(recType==='weekdays')  rule.weekdays=[...recWeekdays];
   if(recType==='monthday')  rule.monthDay=recMonthDay;
   if(recType==='yearly')    rule.yearDate=document.getElementById('rc-yearly-date').value;
   if(recType==='once')      rule.onceDate=document.getElementById('rc-once-date').value;
-
   const startVal=document.getElementById('newChoreStart').value;
   const nextDue=recType==='once'?(rule.onceDate||todayISO()):(startVal||todayISO());
-  // Read time — store as "HH:MM" string or null if blank
   const timeVal=document.getElementById('newChoreTime').value.trim()||null;
-
   if(editingId!==null){
     const c=state.chores.find(x=>x.id===editingId);
     if(c){c.name=name;c.rule=rule;c.cat=selectedCat;c.nextDue=nextDue;c.dueTime=timeVal;}
   }else{
     state.chores.unshift({id:state.nextId++,name,rule,cat:selectedCat,done:false,archived:false,nextDue,dueTime:timeVal});
   }
-  saveState();closeModal('addModal');renderAll();scheduleNotifications();
+  saveState();closeModal('addModal');renderAll();
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // CATEGORY MODAL
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 let editingCatId=null,selectedEmoji='🌟',selectedColorHex=CAT_COLORS[0].hex;
 function buildCatModalPickers(){
   document.getElementById('emojiGrid').innerHTML=EMOJI_OPTIONS.map(e=>
@@ -1282,9 +1161,9 @@ function saveCategory(){
   saveState();closeModal('addCatModal');renderAll();
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // CONFIRM
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 let pendingAction=null;
 function showConfirm(title,msg,okLabel,isArchive,action){
   pendingAction=action;
@@ -1317,106 +1196,9 @@ function doConfirm(){
 }
 function closeConfirm(){pendingAction=null;closeModal('confirmModal');}
 
-// ═══════════════════════════════════════════════════
-// NOTIFICATIONS — FIX #3: SW-ready check, not a race condition
-// ═══════════════════════════════════════════════════
-let swReg=null;
-
-async function registerSW(){
-  if(!('serviceWorker' in navigator))return;
-  try{
-    swReg=await navigator.serviceWorker.register('./sw.js',{scope:'./'});
-    // FIX #3: listen for SW becoming active, then schedule
-    if(swReg.installing){
-      swReg.installing.addEventListener('statechange',function(){
-        if(this.state==='activated')scheduleNotifications();
-      });
-    } else if(swReg.active){
-      scheduleNotifications();
-    }
-  }catch(e){console.warn('SW registration failed:',e);}
-}
-
-async function requestNotifPermission(){
-  // FIX #2: safe check
-  if(!('Notification' in window)){showToast('⚠️ Notifications not supported');return;}
-  const perm=await Notification.requestPermission();
-  if(perm==='granted'){
-    state.notifSettings.enabled=true;
-    state.notifSettings.dailyDigest=true;
-    state.notifSettings.dueAlerts=true;
-    state.notifSettings.dismissed=true;
-    saveState();
-    showToast('🔔 Notifications enabled!');
-    scheduleNotifications();renderStats();renderHome();
-  }else if(perm==='denied'){
-    showToast('❌ Blocked — enable in Settings → Safari → Websites → Notifications');
-  }
-}
-
-function dismissNotifBanner(){
-  state.notifSettings.dismissed=true;saveState();
-  document.getElementById('notifBanner').style.display='none';
-}
-
-function saveNotifSettings(){
-  state.notifSettings.dailyDigest=document.getElementById('notifDailyToggle').checked;
-  state.notifSettings.dueAlerts=document.getElementById('notifDueToggle').checked;
-  state.notifSettings.time=document.getElementById('notifTime').value;
-  saveState();scheduleNotifications();
-}
-
-function scheduleNotifications(){
-  // FIX #2: safe permission check
-  if(notifPermission()!=='granted')return;
-  const sw=swReg&&(swReg.active||swReg.installing||swReg.waiting);
-  if(!sw&&!navigator.serviceWorker.controller)return;
-  const ns=state.notifSettings;
-  const notifications=[];
-  const now=new Date();
-
-  if(ns.dailyDigest&&ns.time){
-    const[hh,mm]=ns.time.split(':').map(Number);
-    const fireTime=new Date();fireTime.setHours(hh,mm,0,0);
-    if(fireTime<=now)fireTime.setDate(fireTime.getDate()+1);
-    const pending=getToday().filter(c=>!c.done).length;
-    notifications.push({
-      tag:'chorify-daily-digest',
-      fireAt:fireTime.getTime(),
-      title:'🏠 Chorify Daily Reminder',
-      body:pending>0?`You have ${pending} task${pending>1?'s':''} to complete today`:'✅ All tasks done today — great work!',
-    });
-  }
-
-  if(ns.dueAlerts){
-    const today=todayISO();
-    const in7=new Date();in7.setDate(in7.getDate()+7);
-    const in7ISO=in7.toISOString().slice(0,10);
-    state.chores
-      .filter(c=>!c.archived&&!c.done&&c.nextDue&&c.nextDue>=today&&c.nextDue<=in7ISO)
-      .forEach(c=>{
-        // Use task's own dueTime if set, otherwise fall back to 08:00
-        const timeStr=c.dueTime||'08:00';
-        const dueDate=new Date(c.nextDue+'T'+timeStr+':00');
-        if(dueDate<=now)return;
-        const diff=Math.round((new Date(c.nextDue+'T00:00:00')-new Date(today+'T00:00:00'))/86400000);
-        const timeLabel=c.dueTime?` at ${formatTime12(c.dueTime)}`:'';
-        notifications.push({
-          tag:`chorify-task-${c.id}`,
-          fireAt:dueDate.getTime(),
-          title:diff===0?`📋 Due today: ${c.name}`:`📅 Coming up: ${c.name}`,
-          body:diff===0?`"${c.name}" is due today${timeLabel}`:`"${c.name}" is due in ${diff} day${diff>1?'s':''}${timeLabel}`,
-        });
-      });
-  }
-
-  const target=navigator.serviceWorker.controller||(swReg&&swReg.active);
-  if(target)target.postMessage({type:'SCHEDULE_NOTIFICATIONS',notifications});
-}
-
-// ═══════════════════════════════════════════════════
-// MODAL / NAV UTILS
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+// NAV UTILS
+// ═══════════════════════════════════════════
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function bgClose(e,id){if(e.target===document.getElementById(id)){closeModal(id);closeOpenSwipe();}}
 
@@ -1443,26 +1225,18 @@ function renderAll(){
   if(currentCatId)openCategory(currentCatId);
 }
 
-// ═══════════════════════════════════════════════════
-// VISIBILITY CHANGE
-// ═══════════════════════════════════════════════════
+// Re-check date when user returns to the tab
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'){
-    updateGreeting();
-    runDailyEngine();
-    renderAll();
-    scheduleNotifications();
+    updateGreeting();runDailyEngine();renderAll();
   }
 });
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 loadState();
 runDailyEngine();
-registerSW(); // SW registers and calls scheduleNotifications when ready (FIX #3)
-updateClock();
-setInterval(updateClock,30000);
 updateGreeting();
 renderAll();
 </script>
